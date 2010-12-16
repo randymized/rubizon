@@ -15,10 +15,15 @@ Jeweler::Tasks.new do |gem|
   gem.name = "rubizon"
   gem.homepage = "http://github.com/randymized/rubizon"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{A Ruby interface to Amazon Web Services}
+  gem.description = %Q{A Ruby interface to Amazon Web Services.  Rubizon has a modular design, allowing parts of it to be used even if other
+parts aren't.  For example, Rubizon might be used to create or sign a URL, but the actual submission is made using some other facility.
+
+The initial implementation was created for publishing to SNS, but the design will hopefully prove to adapt to other services
+and actions.
+}
   gem.email = "ot40ddj02@sneakemail.com"
-  gem.authors = ["randymized"]
+  gem.authors = ["Randy McLaughlin"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,
   # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
   #  gem.add_runtime_dependency 'jabber4r', '> 0.1'

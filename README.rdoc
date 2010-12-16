@@ -1,6 +1,10 @@
 = rubizon
 
-Description goes here.
+A Ruby interface to Amazon Web Services.  Rubizon has a modular design, allowing parts of it to be used even if other
+parts aren't.  For example, Rubizon might be used to create or sign a URL, but the actual submission is made using some other facility.
+
+The initial implementation was created for publishing to SNS, but the design will hopefully prove to adapt to other services
+and actions.
 
 == Contributing to rubizon
  
@@ -14,6 +18,6 @@ Description goes here.
 
 == Copyright
 
-Copyright (c) 2010 randymized. See LICENSE.txt for
+Copyright (c) 2010 Randy McLaughlin. See LICENSE.txt for
 further details.
 
