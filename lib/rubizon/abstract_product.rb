@@ -3,7 +3,7 @@ module Rubizon
     # An abstract representation of an AWS product, providing a foundation for
     # classes that represent specific AWS products.
     class AbstractProduct
-      attr_reader :base_uri
+      attr_reader :base_url
       
       # An artifact of the signing process: the query string portion of the 
       # string to sign.  This is of possible debugging value.
@@ -17,29 +17,28 @@ module Rubizon
       #
       # specs - A Hash containing specifications for the product.
       #         - :ARN - If an ARN is available for the product it should be specified
-      #                  For some products, the URI can be deduced from the ARN.
+      #                  For some products, the URL can be deduced from the ARN.
       #                  If not, it can be specified.
-      #         - :URI - The base URI to be used.  This is optional if an ARN or host
-      #                  is specified.  It will override any URI deduced
+      #         - :URL - The base URL to be used.  This is optional if an ARN or host
+      #                  is specified.  It will override any URL deduced
       #                  from the ARN or host.
-      #         - :host   - If host is specified, but not URI, the URI will
+      #         - :host   - If host is specified, but not URL, the URL will
       #                     be "http(s)://#{host}/"
       #         - :scheme - The default scheme is http.  You may specify https
-      #                     instead.  The scheme is ignored if a URI is 
+      #                     instead.  The scheme is ignored if a URL is 
       #                     specifically specified.
       def initialize(specs={})
-        @base_uri= specs[:URI] || specs['URI'] || specs[:uri] || specs['uri'] ||
-          specs[:URL] || specs['URL'] || specs[:url] || specs['url']
+        @base_url= specs[:URL] || specs['URL'] || specs[:url] || specs['url']
         @arn= specs[:ARN] || specs['ARN'] || specs[:arn] || specs['arn']
-        unless @base_uri
+        unless @base_url
           scheme= (specs[:scheme] || specs['scheme'] || 'http').to_s
           if host= specs[:host] || specs['host']
-            @base_uri= "#{scheme}://#{host.to_s}/"
+            @base_url= "#{scheme}://#{host.to_s}/"
           elsif @arn
             elems= @arn.split(':',5)
-            @base_uri= "#{scheme}://#{elems[2]}.#{elems[3]}.amazonaws.com/"
+            @base_url= "#{scheme}://#{elems[2]}.#{elems[3]}.amazonaws.com/"
           else
-            raise InvalidParameterError, 'No URI was specified and one could not be deduced from host or arn specifications'
+            raise InvalidParameterError, 'No URL was specified and one could not be deduced from host or arn specifications'
           end
         end
       end
@@ -68,8 +67,8 @@ module Rubizon
         @canonical_querystring= values.join("&")
         @string_to_sign = <<"____".rstrip
 GET
-#{URI::parse(@base_uri).host}
-#{URI::parse(@base_uri).path}
+#{URI::parse(@base_url).host}
+#{URI::parse(@base_url).path}
 #{@canonical_querystring}
 ____
         signature= identifier.sign(signature_method,@string_to_sign)
