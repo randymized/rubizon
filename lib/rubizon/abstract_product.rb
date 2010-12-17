@@ -3,7 +3,7 @@ module Rubizon
     # An abstract representation of an AWS product, providing a foundation for
     # classes that represent specific AWS products.
     class AbstractProduct
-      attr_reader :base_url
+      attr_reader :endpoint
       
       # An artifact of the signing process: the query string portion of the 
       # string to sign.  This is of possible debugging value.
@@ -28,15 +28,15 @@ module Rubizon
       #                     instead.  The scheme is ignored if a URL is 
       #                     specifically specified.
       def initialize(specs={})
-        @base_url= specs[:URL] || specs['URL'] || specs[:url] || specs['url']
+        @endpoint= specs[:URL] || specs['URL'] || specs[:url] || specs['url']
         @arn= specs[:ARN] || specs['ARN'] || specs[:arn] || specs['arn']
-        unless @base_url
+        unless @endpoint
           scheme= (specs[:scheme] || specs['scheme'] || 'http').to_s
           if host= specs[:host] || specs['host']
-            @base_url= "#{scheme}://#{host.to_s}/"
+            @endpoint= "#{scheme}://#{host.to_s}/"
           elsif @arn
             elems= @arn.split(':',5)
-            @base_url= "#{scheme}://#{elems[2]}.#{elems[3]}.amazonaws.com/"
+            @endpoint= "#{scheme}://#{elems[2]}.#{elems[3]}.amazonaws.com/"
           else
             raise InvalidParameterError, 'No URL was specified and one could not be deduced from host or arn specifications'
           end
@@ -67,8 +67,8 @@ module Rubizon
         @canonical_querystring= values.join("&")
         @string_to_sign = <<"____".rstrip
 GET
-#{URI::parse(@base_url).host}
-#{URI::parse(@base_url).path}
+#{URI::parse(@endpoint).host}
+#{URI::parse(@endpoint).path}
 #{@canonical_querystring}
 ____
         signature= identifier.sign(signature_method,@string_to_sign)

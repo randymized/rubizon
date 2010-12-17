@@ -12,24 +12,24 @@ class TestAbstractProduct < Test::Unit::TestCase
       # the URL would be: http://sns.us-east-1.amazonaws.com/
       # The URL may be specified specifically if it cannot be deduced from the ARN in this way
       prod= Rubizon::AbstractProduct.new(:arn=>@arn)
-      assert_equal "http://#{@product}.#{@region}.amazonaws.com/", prod.base_url
+      assert_equal "http://#{@product}.#{@region}.amazonaws.com/", prod.endpoint
     end
     should "calculate the URL if only an ARN and a scheme is specified" do
       prod= Rubizon::AbstractProduct.new(:arn=>@arn,:scheme=>:https)
-      assert_equal "https://#{@product}.#{@region}.amazonaws.com/", prod.base_url
+      assert_equal "https://#{@product}.#{@region}.amazonaws.com/", prod.endpoint
     end
     should "calculate the URL if only host is specified" do
       prod= Rubizon::AbstractProduct.new(:host=>'example.com')
-      assert_equal "http://example.com/", prod.base_url
+      assert_equal "http://example.com/", prod.endpoint
     end
     should "calculate the URL if only host and scheme is specified" do
       prod= Rubizon::AbstractProduct.new(:host=>'example.com',:scheme=>'https')
-      assert_equal "https://example.com/", prod.base_url
+      assert_equal "https://example.com/", prod.endpoint
     end
     should "prefer a specified URL over one built from ARN, host or scheme" do
       url= 'http://foo.com/xxx'
       prod= Rubizon::AbstractProduct.new(:url=>url,:host=>'example.com',:scheme=>'https',:arn=>@arn)
-      assert_equal url, prod.base_url
+      assert_equal url, prod.endpoint
     end
     should "calculate the signature expected in the example at http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/index.html?rest-signature.html" do
       prod= Rubizon::AbstractProduct.new(:url=>'http://webservices.amazon.com/onca/xml')
