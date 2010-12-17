@@ -9,8 +9,7 @@ class TestAbstractSig2Product < Test::Unit::TestCase
         :path=>'/onca/xml',
         '_omit' => ['SignatureMethod','SignatureVersion']
       )
-      req= prod.create_request
-      req.add_access_credentials(Rubizon::Identifier.new('00000000000000000000','1234567890'))
+      req= prod.create_request(Rubizon::Identifier.new('00000000000000000000','1234567890'))
       req.add_action_query_elements(
         'Service'=>'AWSECommerceService',
         'Operation'=>'ItemLookup',

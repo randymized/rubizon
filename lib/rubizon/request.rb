@@ -27,15 +27,12 @@ module Rubizon
     #              :path   - (optional) Default path is '/'.  May be set to
     #                        a path that applies to all requests for the 
     #                        product.
-    def initialize(scheme,host,path,query_elements={})
+    def initialize(identifier,scheme,host,path,query_elements={})
+      @identifier= identifier
       @scheme= scheme
       @host= host
       @path= path
       @query_elements= query_elements
-    end
-    
-    def add_access_credentials(identifier)
-      @identifier= identifier
     end
     
     def append_to_path(path='')
