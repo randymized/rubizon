@@ -31,6 +31,30 @@ class TestAbstractProduct < Test::Unit::TestCase
       prod= Rubizon::AbstractProduct.new(:uri=>uri,:host=>'example.com',:scheme=>'https',:arn=>@arn)
       assert_equal uri, prod.base_uri
     end
+    should "calculate the signature expected in the example at http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/index.html?rest-signature.html" do
+      prod= Rubizon::AbstractProduct.new(:uri=>'http://webservices.amazon.com/onca/xml')
+      h= 
+      q= prod.query_string(
+        Rubizon::Identifier.new('00000000000000000000','1234567890'),
+        'Service'=>'AWSECommerceService',
+        'Operation'=>'ItemLookup',
+        'ItemId'=>'0679722769',
+        'ResponseGroup'=>'ItemAttributes,Offers,Images,Reviews',
+        'Version'=>'2009-01-06',
+        'Timestamp'=>'2009-01-01T12:00:00Z',
+        '_omit' => ['SignatureMethod','SignatureVersion']
+      )
+      assert_equal <<____.rstrip, prod.canonical_querystring
+AWSAccessKeyId=00000000000000000000&ItemId=0679722769&Operation=ItemLookup&ResponseGroup=ItemAttributes%2COffers%2CImages%2CReviews&Service=AWSECommerceService&Timestamp=2009-01-01T12%3A00%3A00Z&Version=2009-01-06
+____
+      assert_equal <<____.rstrip, prod.string_to_sign
+GET
+webservices.amazon.com
+/onca/xml
+AWSAccessKeyId=00000000000000000000&ItemId=0679722769&Operation=ItemLookup&ResponseGroup=ItemAttributes%2COffers%2CImages%2CReviews&Service=AWSECommerceService&Timestamp=2009-01-01T12%3A00%3A00Z&Version=2009-01-06
+____
+      assert_equal 'Nace%2BU3Az4OhN7tISqgs1vdLBHBEijWcBeCqL5xN9xg%3D', CGI::escape(CGI::parse(q)['Signature'].first)
+    end
   end
 end
 
