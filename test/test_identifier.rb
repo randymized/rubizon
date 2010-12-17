@@ -22,5 +22,13 @@ class TestIdentifier < Test::Unit::TestCase
     should "produce a different signature if initialized with a different access key" do
       assert_not_equal @expected_signature, Rubizon::Identifier.new(AWSAccessKeyId,SecretAccessKeyId+'x').sign256(@arbitrary_string)
     end
+    should "sign an arbitrary string based upon a signature method of HmacSHA256" do
+      assert_equal @expected_signature, @id.sign('HmacSHA256',@arbitrary_string)
+    end
+    should "raise an exception if an unsupported signature method is requested" do
+      assert_raise(Rubizon::UnsupportedSignatureMethodError) do
+        @id.sign('foo',@arbitrary_string)
+      end
+    end
   end
 end
