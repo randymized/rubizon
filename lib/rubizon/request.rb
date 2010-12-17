@@ -68,6 +68,7 @@ module Rubizon
     
     # Create a query string from a hash and sign it.
     def query_string
+      return @query_string if @query_string
       @query_elements['Timestamp']= Time::at(Time.now).utc.strftime("%Y-%m-%dT%H:%M:%S.000Z") unless @query_elements['Timestamp']
       @query_elements['AWSAccessKeyId']= @identifier.accessID
       signature_method= @query_elements['SignatureMethod']
@@ -87,7 +88,7 @@ GET
 ____
       signature= @identifier.sign(signature_method,@string_to_sign)
       @query_elements['Signature'] = signature
-      @query_elements.collect { |key, value| [url_encode(key), url_encode(value)].join("=") }.join('&') # order doesn't matter for the actual request
+      @query_string= @query_elements.collect { |key, value| [url_encode(key), url_encode(value)].join("=") }.join('&') # order doesn't matter for the actual request
     end
     
     def url
