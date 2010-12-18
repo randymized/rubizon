@@ -68,7 +68,31 @@ module Rubizon
     
     # Create a query string from a hash and sign it.
     def query_string
-      return @query_string if @query_string
+      return @query_string ||=
+        if @query_elements['SignatureVersion'] == 2
+          query_string_sig2
+        else
+          raise UnsupportedSignatureVersionError, 'Only signature version 2 requests are supported at this time'
+        end
+    end
+    
+    def url
+      endpoint+'?'+query_string
+    end
+    
+    # An artifact of the signature version 2 signing process:
+    # The query string portion of the string to sign.  
+    # This is of possible debugging value.
+    attr_reader :canonical_querystring
+
+    # An artifact of the signature version 2 signing process:
+    # The string that is used to calculate the signature.   
+    # This is of possible debugging value.
+    attr_reader :string_to_sign
+      
+    protected
+    # Create a query string and sign it using the signature version 2 algorithm.
+    def query_string_sig2
       @query_elements['Timestamp']= Time::at(Time.now).utc.strftime("%Y-%m-%dT%H:%M:%S.000Z") unless @query_elements['Timestamp']
       @query_elements['AWSAccessKeyId']= @identifier.accessID
       signature_method= @query_elements['SignatureMethod']
@@ -88,22 +112,8 @@ GET
 ____
       signature= @identifier.sign(signature_method,@string_to_sign)
       @query_elements['Signature'] = signature
-      @query_string= @query_elements.collect { |key, value| [url_encode(key), url_encode(value)].join("=") }.join('&') # order doesn't matter for the actual request
+      @query_elements.collect { |key, value| [url_encode(key), url_encode(value)].join("=") }.join('&') # order doesn't matter for the actual request
     end
-    
-    def url
-      endpoint+'?'+query_string
-    end
-    
-    # An artifact of the signing process: the query string portion of the 
-    # string to sign.  This is of possible debugging value.
-    attr_reader :canonical_querystring
-
-    # An artifact of the signing process: the string that is used to calculate
-    # the signature.   This is of possible debugging value.
-    attr_reader :string_to_sign
-      
-    protected
     def url_encode(string)
       string = string.to_s
       # It's kind of like CGI.escape, except CGI.escape is encoding a tilde when
