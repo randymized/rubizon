@@ -82,5 +82,16 @@ module Rubizon
     def create_request(credentials)
       Request.new(credentials,@scheme,@host,@path,@query_elements)
     end
+
+  protected 
+    # In most cases, an action method needs only to invoke this method.
+    # It will create a Request object, add query elements for the action and
+    # its subject and return the request object.  The URL, query string,
+    # hostname and other information needed to get (or post, put or delete)
+    # a resource from AWS can then be obtained via Request methods.
+    def basic_action(action_elements,subject_elements=nil)
+      req= create_request(@credentials)
+      req.add_action(action_elements,subject_elements)
+    end
   end
 end

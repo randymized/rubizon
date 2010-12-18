@@ -73,10 +73,10 @@ module Rubizon
     #                    additional path elements needed to specify the action
     # subject_elements - (optional) A Hash containing additional key/value pairs
     #                    that specify the subject of the action
-    def add_action(action,subject_elements=nil)
-      @query_elements.merge! action.query_elements
+    def add_action(action_elements,subject_elements=nil)
+      @query_elements.merge! action_elements
       @query_elements.merge! subject_elements if subject_elements
-      @path+= action.append_this_to_path
+      self
     end
 
     # Returns the URL scheme, such as http or https
