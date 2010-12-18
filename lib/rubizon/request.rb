@@ -58,8 +58,11 @@ module Rubizon
     #
     # query_elements - A Hash containing key/value pairs to be added to the
     #                  query string.
+    #
+    # returns self
     def add_action_query_elements(query_elements)
       @query_elements.merge! query_elements
+      self
     end
     
     # Add query elements and additional path elements from an Action.
