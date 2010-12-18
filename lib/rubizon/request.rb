@@ -61,6 +61,20 @@ module Rubizon
     def add_action_query_elements(query_elements)
       @query_elements.merge! query_elements
     end
+    
+    # Add query elements and additional path elements from an Action.
+    # Additional key/value pairs may be merged into the action's set of values
+    # to define the subject of the action.
+    #
+    # action           - An Action object that defines key/value pairs and
+    #                    additional path elements needed to specify the action
+    # subject_elements - (optional) A Hash containing additional key/value pairs
+    #                    that specify the subject of the action
+    def add_action(action,subject_elements=nil)
+      @query_elements.merge! action.query_elements
+      @query_elements.merge! subject_elements if subject_elements
+      @path+= action.append_this_to_path
+    end
 
     # Returns the URL scheme, such as http or https
     attr_reader :scheme
