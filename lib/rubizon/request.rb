@@ -2,31 +2,37 @@ require 'cgi'
 module Rubizon
   # Represents a request to be made to AWS.
   #
-  # Starts with specifications for the product, such as its ARN, elements
-  # of its URL and query elements.  To this is added access credentials and
-  # specifications for the specific action to be performed.
+  # Starts with access credentials and specifications for the product, 
+  # such as its ARN, elements of its URL and query elements.  
+  # To this is added specifications for the specific action to be performed.
   # 
   # Request builds a URL for the action and signs the request.  It then
   # makes the entire URL and various components of it available for whatever
   # transport mechanism is to be used.
+  #
+  # A new instance of Request is to be created for each request sent to AWS
   class Request
-    # Initialization
+    # Initialize the request.
     #
-    # identifier - A Rubizon::Identifier object that encapsulates an AWS key
-    #              pair.  It will be used to sign the request.
-    # specs -      A Hash containing specifications for the product.
-    #              :scheme - (optional) Default scheme is http.  
-    #                        May be set to "https".
-    #              :ARN    - Required if an ARN is available for the product 
-    #                        and an ARN is required in queries by the API.
-    #                        In many cases, the host can be deduced from the
-    #                        content of the ARN.
-    #              :host   - (conditionally required) If an ARN is not
-    #                        specified or if the host cannot be properly
-    #                        deduced from the ARN, :host must be specified.
-    #              :path   - (optional) Default path is '/'.  May be set to
-    #                        a path that applies to all requests for the 
-    #                        product.
+    # identifier     - A Rubizon::Identifier object that encapsulates an AWS key
+    #                  pair.  It will be used to sign the request.
+    # scheme         - The scheme to be used: 'http' or 'https'
+    # host           - The name of the HTTP host to serve this request
+    # path           - The URL path, typically '/'.
+    # query_elements - A hash of key/value pairs to be included in the 
+    #                  query string.  
+    #                _omit - If an element with a key of '_omit' is included,
+    #                        the value must be an array containing names of keys
+    #                        to be omitted from the query_elements array before
+    #                        the request is signed and the query string formed.
+    #                        This allows allowing SignatureMethod or 
+    #                        SignatureVersion to be specified, even if they are
+    #                        not to be included in the query string.
+    #                SignatureVersion - The signature version to be used, such
+    #                        as 1 or 2.  This should be a numeric value.  If not
+    #                        present, signature version 1 is implied.
+    #                SignatureMethod - The signature methods defined for version
+    #                        two are HmacSHA256 and HmacSHA1.
     def initialize(identifier,scheme,host,path,query_elements={})
       @identifier= identifier
       @scheme= scheme
@@ -34,15 +40,23 @@ module Rubizon
       @path= path
       @query_elements= query_elements
     end
-    
-    def append_to_path(path='')
+
+    # Append additional elements to the currently defined path.
+    def append_to_path(path)
       @path+= path
     end
     
-    def path=(path='')
+    # Replace the currently defined path with the one given.
+    def path=(path)
       @path= path
     end
     
+    # Add key/value pairs to the query_elements.  Typically, these additional
+    # elements will be added to specify the action to be taken and parameters
+    # of that action.
+    #
+    # query_elements - A Hash containing key/value pairs to be added to the
+    #                  query string.
     def add_action_query_elements(query_elements)
       @query_elements.merge! query_elements
     end
@@ -67,15 +81,22 @@ module Rubizon
     end
     
     # Create a query string from a hash and sign it.
+    # The signature algorithm will be determined from the query elements,
+    # such as SignatureVersion
+    #
+    # The query string, once created, is immutable.
     def query_string
       return @query_string ||=
-        if @query_elements['SignatureVersion'] == 2
+        if @query_elements['SignatureVersion'].to_i == 2
           query_string_sig2
         else
           raise UnsupportedSignatureVersionError, 'Only signature version 2 requests are supported at this time'
         end
     end
     
+    # Returns the full URL 
+    #
+    # The query string portion of the URL, once created, is immutable.
     def url
       endpoint+'?'+query_string
     end
