@@ -38,7 +38,7 @@ module Rubizon
       @scheme= scheme
       @host= host
       @path= path
-      @query_elements= query_elements
+      @query_elements= query_elements.dup
     end
 
     # Append additional elements to the currently defined path.
