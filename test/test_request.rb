@@ -52,21 +52,6 @@ class TestRequest < Test::Unit::TestCase
       req= prod.create_request(@@credentials)
       assert_equal 'https://sns.us-east-1.amazonaws.com/', req.endpoint
     end
-    should "calculate the signature (version 2) expected in the example at http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/index.html?rest-signature.html" do
-      req= @@eCommerceServiceProduct.create_request(@@credentials)
-      req.add_action_query_elements @@eCommerceServiceRequestElements
-      q= req.query_string
-      assert_equal <<____.rstrip, req.canonical_querystring
-AWSAccessKeyId=00000000000000000000&ItemId=0679722769&Operation=ItemLookup&ResponseGroup=ItemAttributes%2COffers%2CImages%2CReviews&Service=AWSECommerceService&Timestamp=2009-01-01T12%3A00%3A00Z&Version=2009-01-06
-____
-      assert_equal <<____.rstrip, req.string_to_sign
-GET
-webservices.amazon.com
-/onca/xml
-AWSAccessKeyId=00000000000000000000&ItemId=0679722769&Operation=ItemLookup&ResponseGroup=ItemAttributes%2COffers%2CImages%2CReviews&Service=AWSECommerceService&Timestamp=2009-01-01T12%3A00%3A00Z&Version=2009-01-06
-____
-      assert_equal @@expectedSignature, CGI::escape(CGI::parse(q)['Signature'].first)
-    end
     should "Create a URL that contains the expected host name for the sample request" do
       req= @@eCommerceServiceProduct.create_request(@@credentials)
       req.add_action_query_elements @@eCommerceServiceRequestElements
