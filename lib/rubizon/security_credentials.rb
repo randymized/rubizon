@@ -9,9 +9,9 @@ module Rubizon
         @secretID= secretID
       end
       def sign256(string_to_sign)
-        hmac = HMAC::SHA256.new(@secretID)
-        hmac.update(string_to_sign)
-        Base64.encode64(hmac.digest).chomp
+        @hmac256||= HMAC::SHA256.new(@secretID)
+        @hmac256.update(string_to_sign)
+        Base64.encode64(@hmac256.digest).chomp
       end
       def sign(signature_method,string_to_sign)
         case signature_method
