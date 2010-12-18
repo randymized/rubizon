@@ -6,6 +6,41 @@ parts aren't.  For example, Rubizon might be used to create or sign a URL, but t
 The initial implementation was created for publishing to SNS, but the design will hopefully prove to adapt to other services
 and actions.
 
+The rubizon/product/*.rb files are intentionally not required by the rubizon.rb
+file.  You will need to require the specific products you are working with from
+your own code.
+
+The initial implementation supports signature version 2 and thus should be able
+to support the following REST APIs:
+    EC2
+    Elastic MapReduce
+    Auto Scaling
+    SimpleDB
+    RDS
+    Identity and Access Management
+    SQS
+    SNS
+    CloudWatch
+    Virtual Private Cloud
+    Elastic Load Balancing
+    FPS 
+    AWS Import/Export
+
+Notes on signature formats of other AWS services:
+    http://docs.amazonwebservices.com/AmazonCloudFront/latest/DeveloperGuide/index.html?RESTAuthentication.html
+    Cloud Front authorizes only the timestamp, using SHA1 only, and places in an "Authorization" header
+    
+    Route 53 uses X-Amzn-Authorization header, similar to CloudFront's Authorization header
+    
+    S3 also uses an Authorization header
+    
+    DevPay uses signature version 1
+    
+    Alexa Web Information Service uses something like signature version 1 (key id, timestamp and signature)
+    
+    Mechanical Turk uses something like signature version 1
+
+
 == Contributing to rubizon
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
