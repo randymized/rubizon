@@ -79,8 +79,8 @@ module Rubizon
       "#{@scheme}://#{@host}#{@path}"
     end
     
-    def create_request(identifier)
-      Request.new(identifier,@scheme,@host,@path,@query_elements)
+    def create_request(credentials)
+      Request.new(credentials,@scheme,@host,@path,@query_elements)
     end
   end
 end

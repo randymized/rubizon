@@ -14,8 +14,9 @@ module Rubizon
   class Request
     # Initialize the request.
     #
-    # identifier     - A Rubizon::Identifier object that encapsulates an AWS key
-    #                  pair.  It will be used to sign the request.
+    # credentials    - A Rubizon::SecurityCredentials object that 
+    #                  encapsulates an AWS key pair.
+    #                  It will be used to sign the request.
     # scheme         - The scheme to be used: 'http' or 'https'
     # host           - The name of the HTTP host to serve this request
     # path           - The URL path, typically '/'.
@@ -33,8 +34,8 @@ module Rubizon
     #                        present, signature version 1 is implied.
     #                SignatureMethod - The signature methods defined for version
     #                        two are HmacSHA256 and HmacSHA1.
-    def initialize(identifier,scheme,host,path,query_elements={})
-      @identifier= identifier
+    def initialize(credentials,scheme,host,path,query_elements={})
+      @credentials= credentials
       @scheme= scheme
       @host= host
       @path= path
@@ -115,7 +116,7 @@ module Rubizon
     # Create a query string and sign it using the signature version 2 algorithm.
     def query_string_sig2
       @query_elements['Timestamp']= Time::at(Time.now).utc.strftime("%Y-%m-%dT%H:%M:%S.000Z") unless @query_elements['Timestamp']
-      @query_elements['AWSAccessKeyId']= @identifier.accessID
+      @query_elements['AWSAccessKeyId']= @credentials.accessID
       signature_method= @query_elements['SignatureMethod']
       if @query_elements['_omit']
         @query_elements['_omit'].each do |k|
@@ -131,7 +132,7 @@ GET
 #{URI::parse(endpoint).path}
 #{@canonical_querystring}
 ____
-      signature= @identifier.sign(signature_method,@string_to_sign)
+      signature= @credentials.sign(signature_method,@string_to_sign)
       @query_elements['Signature'] = signature
       @query_elements.collect { |key, value| [url_encode(key), url_encode(value)].join("=") }.join('&') # order doesn't matter for the actual request
     end

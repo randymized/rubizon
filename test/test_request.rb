@@ -1,14 +1,14 @@
 require 'helper'
 
 class TestAbstractSig2Product < Test::Unit::TestCase
-  @@Identifier= Rubizon::Identifier.new('00000000000000000000','1234567890')
-  @@ECommerceServiceProduct= Rubizon::AbstractSig2Product.new(
+  @@credentials= Rubizon::SecurityCredentials.new('00000000000000000000','1234567890')
+  @@eCommerceServiceProduct= Rubizon::AbstractSig2Product.new(
     :scheme=>'http',
     :host=>'webservices.amazon.com',
     :path=>'/onca/xml',
     '_omit' => ['SignatureMethod','SignatureVersion']
   )
-  @@ECommerceServiceRequestElements= {
+  @@eCommerceServiceRequestElements= {
     'Service'=>'AWSECommerceService',
     'Operation'=>'ItemLookup',
     'ItemId'=>'0679722769',
@@ -28,33 +28,33 @@ class TestAbstractSig2Product < Test::Unit::TestCase
       prod= Rubizon::AbstractSig2Product.new(
         :arn=>@arn
       )
-      req= prod.create_request(@@Identifier)
+      req= prod.create_request(@@credentials)
       assert_equal @host, req.host
     end
     should "report the product's scheme" do
       prod= Rubizon::AbstractSig2Product.new(
         :arn=>@arn
       )
-      req= prod.create_request(@@Identifier)
+      req= prod.create_request(@@credentials)
       assert_equal 'https', req.scheme
     end
     should "report the product's path" do
       prod= Rubizon::AbstractSig2Product.new(
         :arn=>@arn
       )
-      req= prod.create_request(@@Identifier)
+      req= prod.create_request(@@credentials)
       assert_equal '/', req.path
     end
     should "report the product's endpoint" do
       prod= Rubizon::AbstractSig2Product.new(
         :arn=>@arn
       )
-      req= prod.create_request(@@Identifier)
+      req= prod.create_request(@@credentials)
       assert_equal 'https://sns.us-east-1.amazonaws.com/', req.endpoint
     end
     should "calculate the signature (version 2) expected in the example at http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/index.html?rest-signature.html" do
-      req= @@ECommerceServiceProduct.create_request(@@Identifier)
-      req.add_action_query_elements @@ECommerceServiceRequestElements
+      req= @@eCommerceServiceProduct.create_request(@@credentials)
+      req.add_action_query_elements @@eCommerceServiceRequestElements
       q= req.query_string
       assert_equal <<____.rstrip, req.canonical_querystring
 AWSAccessKeyId=00000000000000000000&ItemId=0679722769&Operation=ItemLookup&ResponseGroup=ItemAttributes%2COffers%2CImages%2CReviews&Service=AWSECommerceService&Timestamp=2009-01-01T12%3A00%3A00Z&Version=2009-01-06
@@ -68,32 +68,32 @@ ____
       assert_equal @@expectedSignature, CGI::escape(CGI::parse(q)['Signature'].first)
     end
     should "Create a URL that contains the expected host name for the sample request" do
-      req= @@ECommerceServiceProduct.create_request(@@Identifier)
-      req.add_action_query_elements @@ECommerceServiceRequestElements
+      req= @@eCommerceServiceProduct.create_request(@@credentials)
+      req.add_action_query_elements @@eCommerceServiceRequestElements
       uri = URI.parse(req.url);
-      assert_equal @@ECommerceServiceProduct.host, uri.host
+      assert_equal @@eCommerceServiceProduct.host, uri.host
     end
     should "Create a URL that contains the expected path for the sample request" do
-      req= @@ECommerceServiceProduct.create_request(@@Identifier)
-      req.add_action_query_elements @@ECommerceServiceRequestElements
+      req= @@eCommerceServiceProduct.create_request(@@credentials)
+      req.add_action_query_elements @@eCommerceServiceRequestElements
       uri = URI.parse(req.url);
-      assert_equal @@ECommerceServiceProduct.path, uri.path
+      assert_equal @@eCommerceServiceProduct.path, uri.path
     end
     should "Create a URL that contains the expected scheme for the sample request" do
-      req= @@ECommerceServiceProduct.create_request(@@Identifier)
-      req.add_action_query_elements @@ECommerceServiceRequestElements
+      req= @@eCommerceServiceProduct.create_request(@@credentials)
+      req.add_action_query_elements @@eCommerceServiceRequestElements
       uri = URI.parse(req.url);
-      assert_equal @@ECommerceServiceProduct.scheme, uri.scheme
+      assert_equal @@eCommerceServiceProduct.scheme, uri.scheme
     end
     should "Create a URL that contains the expected query string for the sample request" do
-      req= @@ECommerceServiceProduct.create_request(@@Identifier)
-      req.add_action_query_elements @@ECommerceServiceRequestElements
+      req= @@eCommerceServiceProduct.create_request(@@credentials)
+      req.add_action_query_elements @@eCommerceServiceRequestElements
       uri = URI.parse(req.url);
       query= CGI::parse(uri.query)
-      @@ECommerceServiceRequestElements.each do |k,v|
+      @@eCommerceServiceRequestElements.each do |k,v|
         assert_equal query.delete(k).first, v
       end
-      assert_equal query.delete('AWSAccessKeyId').first, @@Identifier.accessID
+      assert_equal query.delete('AWSAccessKeyId').first, @@credentials.accessID
       assert_equal CGI::escape(query.delete('Signature').first), @@expectedSignature
       assert query.empty?   #there's nothing left!  All elements are accounted for
     end

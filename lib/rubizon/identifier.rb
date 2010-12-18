@@ -2,7 +2,7 @@ require 'hmac-sha2'
 require 'base64'
 require File.dirname(__FILE__) + '/exceptions'
 module Rubizon
-    class Identifier
+    class SecurityCredentials
       attr_reader :accessID
       def initialize(accessID, secretID)
         @accessID= accessID
