@@ -37,8 +37,7 @@ module Rubizon
       @arn= specs.delete(:ARN) || specs.delete('ARN') || specs.delete(:arn) || specs.delete('arn')
       @host= specs.delete(:host) || specs.delete('host')
       if @arn && !@host
-        elems= @arn.split(':',5)
-        @host= "#{elems[2]}.#{elems[3]}.amazonaws.com"
+        class.host_from_ARN(@arn)
       end
       if !@host
         raise InvalidParameterError, 'No host was specified and one could not be deduced from arn specifications'
@@ -48,6 +47,19 @@ module Rubizon
       @query_elements['SignatureMethod']= 'HmacSHA256'
       @query_elements['SignatureVersion']= 2
       @query_elements['arn']= @arn if @arn
+    end
+
+    # Default method for calculating the name of the host associated with a given
+    # Amazon Resource Name (ARN).  This may vary from product to product, so
+    # any product with a different mapping from ARN to hostname should override
+    # this method.
+    #
+    # arn - A String containing an Amazon Resource Name (ARN).
+    #
+    # Returns the name of the host hosting the named resource.
+    def host_from_ARN(arn)
+      elems= arn.split(':',5)
+      "#{elems[2]}.#{elems[3]}.amazonaws.com"
     end
     
     # Returns the URL scheme, such as http or https
