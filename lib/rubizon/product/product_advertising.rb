@@ -12,7 +12,7 @@ module Rubizon
     # scheme      - (optional - default: http) May set to 'https' if supported.
     def initialize(credentials,scheme='http')
       super(
-        :scheme=>'http',
+        :scheme=>scheme,
         :host=>'webservices.amazon.com',
         :path=>'/onca/xml',
         '_omit' => ['SignatureMethod','SignatureVersion'],
