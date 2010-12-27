@@ -53,29 +53,15 @@ module Rubizon
     end
     
     # Add key/value pairs to the query_elements.  Typically, these additional
-    # elements will be added to specify the action to be taken and parameters
-    # of that action.
+    # elements will be added to specify the action to be taken or subject of
+    # that action and parameters of that action or subject.
     #
     # query_elements - A Hash containing key/value pairs to be added to the
     #                  query string.
     #
     # returns self
-    def add_action_query_elements(query_elements)
+    def add_query_elements(query_elements)
       @query_elements.merge! query_elements
-      self
-    end
-    
-    # Add query elements and additional path elements from an Action.
-    # Additional key/value pairs may be merged into the action's set of values
-    # to define the subject of the action.
-    #
-    # action           - An Action object that defines key/value pairs and
-    #                    additional path elements needed to specify the action
-    # subject_elements - (optional) A Hash containing additional key/value pairs
-    #                    that specify the subject of the action
-    def add_action(action_elements,subject_elements=nil)
-      @query_elements.merge! action_elements
-      @query_elements.merge! subject_elements if subject_elements
       self
     end
 

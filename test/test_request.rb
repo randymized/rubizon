@@ -55,25 +55,25 @@ class TestRequest < Test::Unit::TestCase
     end
     should "Create a URL that contains the expected host name for the sample request" do
       req= @@eCommerceServiceProduct.create_request(@@credentials)
-      req.add_action_query_elements @@eCommerceServiceRequestElements
+      req.add_query_elements @@eCommerceServiceRequestElements
       uri = URI.parse(req.url);
       assert_equal @@eCommerceServiceProduct.host, uri.host
     end
     should "Create a URL that contains the expected path for the sample request" do
       req= @@eCommerceServiceProduct.create_request(@@credentials)
-      req.add_action_query_elements @@eCommerceServiceRequestElements
+      req.add_query_elements @@eCommerceServiceRequestElements
       uri = URI.parse(req.url);
       assert_equal @@eCommerceServiceProduct.path, uri.path
     end
     should "Create a URL that contains the expected scheme for the sample request" do
       req= @@eCommerceServiceProduct.create_request(@@credentials)
-      req.add_action_query_elements @@eCommerceServiceRequestElements
+      req.add_query_elements @@eCommerceServiceRequestElements
       uri = URI.parse(req.url);
       assert_equal @@eCommerceServiceProduct.scheme, uri.scheme
     end
     should "Create a URL that contains the expected query string for the sample request" do
       req= @@eCommerceServiceProduct.create_request(@@credentials)
-      req.add_action_query_elements @@eCommerceServiceRequestElements
+      req.add_query_elements @@eCommerceServiceRequestElements
       uri = URI.parse(req.url);
       query= CGI::parse(uri.query)
       @@eCommerceServiceRequestElements.each do |k,v|

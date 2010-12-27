@@ -10,18 +10,22 @@ module Rubizon
     # specs -      A Hash containing specifications for the product.
     #              :scheme - (optional) Default scheme is https.  
     #                        May be set to "http".
-    #              :ARN    - Required if an ARN is available for the product 
-    #                        and an ARN is required in queries by the API.
-    #                        In many cases, the host can be deduced from the
-    #                        content of the ARN.
     #              :host   - (conditionally required) If an ARN is not
     #                        specified or if the host cannot be properly
     #                        deduced from the ARN, :host must be specified.
     #                        If specified, this will override any host name
     #                        that might be deduced from the ARN.
+    #              :ARN    - (optional) An ARN may be specified instead of a
+    #                        host.  The host can be deduced from the ARN.
     #              :path   - (optional) Default path is '/'.  May be set to
     #                        a path that applies to all requests for the 
-    #                        product.
+    #                        product.  Additional path elements may be appended
+    #                        if needed by an operation or subject of that
+    #                        operation
+    #              :URL    - (optional) A URL may be specified instead of the
+    #                        individual scheme, host and path elements.  If
+    #                        a URL is specified, it will override the individual
+    #                        elements.
     #              :_omit  - (optional) An array containing a list of elements
     #                        that are not to be included in the query string.
     #                        This, for example, can be used in the Product
@@ -36,13 +40,21 @@ module Rubizon
       @scheme= (specs.delete(:scheme) || specs.delete('scheme') || 'https').to_s
       @arn= specs.delete(:ARN) || specs.delete('ARN') || specs.delete(:arn) || specs.delete('arn')
       @host= specs.delete(:host) || specs.delete('host')
+      @url= specs.delete(:URL) || specs.delete('URL') || specs.delete(:url) || specs.delete('url')
+      @path= specs.delete(:path) || specs.delete('path') || '/'
+      if (@url)
+        require 'uri'
+        url = URI.parse(@url)
+        @scheme= url.scheme
+        @host= url.host
+        @path= url.path
+      end
       if @arn && !@host
-        class.host_from_ARN(@arn)
+        @host= self.class.host_from_ARN(@arn)
       end
       if !@host
         raise InvalidParameterError, 'No host was specified and one could not be deduced from arn specifications'
       end
-      @path= specs.delete(:path) || specs.delete('path') || '/'
       @query_elements= specs
       @query_elements['SignatureMethod']= 'HmacSHA256'
       @query_elements['SignatureVersion']= 2
@@ -57,7 +69,7 @@ module Rubizon
     # arn - A String containing an Amazon Resource Name (ARN).
     #
     # Returns the name of the host hosting the named resource.
-    def host_from_ARN(arn)
+    def self.host_from_ARN(arn)
       elems= arn.split(':',5)
       "#{elems[2]}.#{elems[3]}.amazonaws.com"
     end
@@ -91,6 +103,10 @@ module Rubizon
       "#{@scheme}://#{@host}#{@path}"
     end
     
+    # Create a Request object that can be used to formulate a single request
+    # for this product.
+    #
+    # Returns an instance of Request
     def create_request(credentials)
       Request.new(credentials,@scheme,@host,@path,@query_elements)
     end
@@ -103,7 +119,8 @@ module Rubizon
     # a resource from AWS can then be obtained via Request methods.
     def basic_action(action_elements,subject_elements=nil)
       req= create_request(@credentials)
-      req.add_action(action_elements,subject_elements)
+      req.add_query_elements(action_elements)
+      req.add_query_elements(subject_elements) if subject_elements
     end
   end
 end

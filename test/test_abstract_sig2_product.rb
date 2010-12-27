@@ -18,6 +18,18 @@ class TestAbstractSig2Product < Test::Unit::TestCase
       prod= Rubizon::AbstractSig2Product.new(:arn=>@arn, :host=>'foo.com')
       assert_equal 'foo.com', prod.host
     end
+    should "determine the host if given a URL" do
+      prod= Rubizon::AbstractSig2Product.new(:url=>'http://foo.com/')
+      assert_equal 'foo.com', prod.host
+    end
+    should "determine the scheme if given a URL" do
+      prod= Rubizon::AbstractSig2Product.new(:url=>'ftp://foo.com/')
+      assert_equal 'ftp', prod.scheme
+    end
+    should "determine the path if given a URL" do
+      prod= Rubizon::AbstractSig2Product.new(:url=>'http://foo.com/bar')
+      assert_equal '/bar', prod.path
+    end
     should "calculate the URL if only an ARN is specified" do
       # If the ARN is: arn:aws:sns:us-east-1:123456789:My-Topic
       # the URL would be: https://sns.us-east-1.amazonaws.com/
