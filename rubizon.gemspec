@@ -38,6 +38,7 @@ interpretation of results.
     "lib/rubizon/product/sns.rb",
     "lib/rubizon/request.rb",
     "lib/rubizon/security_credentials.rb",
+    "rubizon.gemspec",
     "test/helper.rb",
     "test/test_abstract_sig2_product.rb",
     "test/test_request.rb",
