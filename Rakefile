@@ -16,11 +16,13 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = "http://github.com/randymized/rubizon"
   gem.license = "MIT"
   gem.summary = %Q{A Ruby interface to Amazon Web Services}
-  gem.description = %Q{A Ruby interface to Amazon Web Services.  Rubizon has a modular design, allowing parts of it to be used even if other
-parts aren't.  For example, Rubizon might be used to create or sign a URL, but the actual submission is made using some other facility.
+  gem.description = %Q{A Ruby interface to Amazon Web Services.  Rubizon separates creating a
+properly-formed, signed URL for making an AWS request from the transport
+mechanism used.
 
-The initial implementation was created for publishing to SNS, but the design will hopefully prove to adapt to other services
-and actions.
+In its initial implementation, Rubizon simply builds and signs URLs.  Further
+development may include adapters to various transport mechanisms and
+interpretation of results.
 }
   gem.email = "ot40ddj02@sneakemail.com"
   gem.authors = ["Randy McLaughlin"]

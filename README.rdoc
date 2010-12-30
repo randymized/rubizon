@@ -1,17 +1,22 @@
 = rubizon
 
-A Ruby interface to Amazon Web Services.  Rubizon has a modular design, allowing parts of it to be used even if other
-parts aren't.  For example, Rubizon might be used to create or sign a URL, but the actual submission is made using some other facility.
+A Ruby interface to Amazon Web Services.  Rubizon separates creating a
+properly-formed, signed URL for making an AWS request from the transport
+mechanism used.  The same logic can thus be used to access AWS using
+Net::HTTP, EventMachine::Protocols::HttpClient or some other transport.
 
-The initial implementation was created for publishing to SNS, but the design will hopefully prove to adapt to other services
-and actions.
+In its initial implementation, Rubizon simply builds and signs URLs.  Further
+development may include adapters to various transport mechanisms and
+interpretation of results.  On the other hand, it may turn out to be best 
+kept merely as a URL generator working in concert with other libraries that
+provide transport and result interpretation.
 
-The rubizon/product/*.rb files are intentionally not required by the rubizon.rb
-file.  You will need to require the specific products you are working with from
-your own code.
-
-The initial implementation supports signature version 2 and thus should be able
-to support the following REST APIs:
+The initial implementation also simply scratches the author's itch: the need
+to send a message to SNS.  The design should lend itself to a broader 
+range of requests and services, but these can be added as needed.  The critical
+feature is being able to sign a request and the code to do so should be
+applicable to requests for any service that supports signature version 2 requests, 
+including the following services:
     EC2
     Elastic MapReduce
     Auto Scaling
@@ -26,17 +31,47 @@ to support the following REST APIs:
     FPS 
     AWS Import/Export
 
+Rubizon is comprised of a few classes:
+    SecurityCredentials encapsulates an AWS Access Key ID and the corresponding
+    Secret Access Key.  It allows querying the access key and signing an
+    arbitrary key, but does not support quering the access key.  Only a single
+    instance of SecurityCredentials need be created for each key pair.
+    
+    AbstractSig2Product is intended to provided a foundation for building
+    requests to any service that supports signature version 2.  The
+    SimpleNotificationService (require 'product/sns') class is a concrete
+    subclass supporting SNS.  Similar classes should be able to similarly
+    subclass AbstractSig2Product in order to support other AWS services.
+    Only a single instance of any product's class should be required to
+    serve any number of requests using the same credentials, host and scheme.
+    
+    Request encapsulates one request, the code to sign it, formulate a URL and
+    to access the URL and its component parts.  A product's class will create
+    a Request every time a URL is to be generated, provide it with the proper
+    values to perform a requested action and then return the request object.
+    The URL and its components can then be queried from the request object.
+
+Since the ultimate intent of Rubizon is to support requests to many of the AWS
+services, even though a given application may only need access to a small number
+of the supported services, the main rubizon.rb file only requires the core
+code.  An interface for each AWS product are maintained in the rubizon/product
+directory and will need to be specifically required into any code needing its
+services.
+
 Notes on signature formats of other AWS services:
     http://docs.amazonwebservices.com/AmazonCloudFront/latest/DeveloperGuide/index.html?RESTAuthentication.html
-    Cloud Front authorizes only the timestamp, using SHA1 only, and places in an "Authorization" header
+    Cloud Front authorizes only the timestamp, using SHA1 only, and places in an
+    "Authorization" header
     
-    Route 53 uses X-Amzn-Authorization header, similar to CloudFront's Authorization header
+    Route 53 uses X-Amzn-Authorization header, similar to CloudFront's 
+    Authorization header
     
     S3 also uses an Authorization header
     
     DevPay uses signature version 1
     
-    Alexa Web Information Service uses something like signature version 1 (key id, timestamp and signature)
+    Alexa Web Information Service uses something like signature version 1 
+    (key id, timestamp and signature)
     
     Mechanical Turk uses something like signature version 1
 
