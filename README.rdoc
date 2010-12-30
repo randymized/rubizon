@@ -11,33 +11,16 @@ interpretation of results.  On the other hand, it may turn out to be best
 kept merely as a URL generator working in concert with other libraries that
 provide transport and result interpretation.
 
-The initial implementation also simply scratches the author's itch: the need
-to send a message to SNS.  The design should lend itself to a broader 
-range of requests and services, but these can be added as needed.  The critical
-feature is being able to sign a request and the code to do so should be
-applicable to requests for any service that supports signature version 2 requests, 
-including the following services:
-    EC2
-    Elastic MapReduce
-    Auto Scaling
-    SimpleDB
-    RDS
-    Identity and Access Management
-    SQS
-    SNS
-    CloudWatch
-    Virtual Private Cloud
-    Elastic Load Balancing
-    FPS 
-    AWS Import/Export
+===Class structure
+Rubizon is comprised of a few foundation classes, described below, as well as
+classes for each of the AWS services it supports.
 
-Rubizon is comprised of a few classes:
-    SecurityCredentials encapsulates an AWS Access Key ID and the corresponding
+    *SecurityCredentials encapsulates an AWS Access Key ID and the corresponding
     Secret Access Key.  It allows querying the access key and signing an
     arbitrary key, but does not support quering the access key.  Only a single
     instance of SecurityCredentials need be created for each key pair.
     
-    AbstractSig2Product is intended to provided a foundation for building
+    *AbstractSig2Product is intended to provided a foundation for building
     requests to any service that supports signature version 2.  The
     SimpleNotificationService (require 'product/sns') class is a concrete
     subclass supporting SNS.  Similar classes should be able to similarly
@@ -45,7 +28,7 @@ Rubizon is comprised of a few classes:
     Only a single instance of any product's class should be required to
     serve any number of requests using the same credentials, host and scheme.
     
-    Request encapsulates one request, the code to sign it, formulate a URL and
+    *Request encapsulates one request, the code to sign it, formulate a URL and
     to access the URL and its component parts.  A product's class will create
     a Request every time a URL is to be generated, provide it with the proper
     values to perform a requested action and then return the request object.
@@ -58,23 +41,66 @@ code.  An interface for each AWS product are maintained in the rubizon/product
 directory and will need to be specifically required into any code needing its
 services.
 
-Notes on signature formats of other AWS services:
-    http://docs.amazonwebservices.com/AmazonCloudFront/latest/DeveloperGuide/index.html?RESTAuthentication.html
+===An example of publishing a message via SNS:
+<tt>
+require 'rubizon'
+require 'rubizon/product/sns'
+require 'net/http'
+require 'URI'
+credentials= Rubizon::SecurityCredentials.new '00000000000000000000','1234567890'
+sns= Rubizon::SimpleNotificationService.new credentials,'sns.us-east-1.amazonaws.com'
+topic= sns.topic 'arn:aws:sns:us-east-1:123123123123:sample-notifications'
+req=topic.publish 'this is a hello world message','hello world'
+Net::HTTP.get_print URI.parse(req.url)
+</tt>
+
+===Supported AWS services
+The initial implementation also simply scratches the author's itch: the need
+to send a message to SNS.  The design should lend itself to a broader 
+range of requests and services, but these can be added as needed.  The critical
+feature is being able to sign a request and the code to do so should be
+applicable to requests for any service that supports signature version 2 requests, 
+including the following services:
+*EC2
+*Elastic MapReduce
+*Auto Scaling
+*SimpleDB
+*RDS
+*Identity and Access Management
+*SQS
+*SNS
+*CloudWatch
+*Virtual Private Cloud
+*Elastic Load Balancing
+*FPS 
+*AWS Import/Export
+
+There are other AWS services that expect requests to be signed differently.
+I'm not sure if there is a definitive reference to what "signature version 1"
+is but there is definite similarity.  I suspect that an AbstractSig1Product 
+class could be created using the AbstractSig2Product model that would cover
+80% of the remaining services.  Here are some notes from a brief exploration
+of the API docs:
+    *http://docs.amazonwebservices.com/AmazonCloudFront/latest/DeveloperGuide/index.html?RESTAuthentication.html
     Cloud Front authorizes only the timestamp, using SHA1 only, and places in an
     "Authorization" header
     
-    Route 53 uses X-Amzn-Authorization header, similar to CloudFront's 
+    *Route 53 uses X-Amzn-Authorization header, similar to CloudFront's 
     Authorization header
     
-    S3 also uses an Authorization header
+    *S3 also uses an Authorization header
     
-    DevPay uses signature version 1
+    *DevPay uses signature version 1
     
-    Alexa Web Information Service uses something like signature version 1 
+    *Alexa Web Information Service uses something like signature version 1 
     (key id, timestamp and signature)
     
-    Mechanical Turk uses something like signature version 1
+    *Mechanical Turk uses something like signature version 1
 
+It also appears that the services that support signature version 2 rely almost
+exclusively on HTTP GETs, rather than POSTs, PUTs and DELETEs.  Rubizon, as
+currently written, only supports GETs.  The Request class could likely be extended
+to support the other REST verbs if there is enough interest and need.
 
 == Contributing to rubizon
  
