@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Randy McLaughlin"]
-  s.date = %q{2010-12-30}
+  s.date = %q{2011-01-03}
   s.description = %q{A Ruby interface to Amazon Web Services.  Rubizon separates creating a
 properly-formed, signed URL for making an AWS request from the transport
 mechanism used.
