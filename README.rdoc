@@ -22,9 +22,9 @@ classes for each of the AWS services it supports.
     
     *AbstractSig2Product is intended to provided a foundation for building
     requests to any service that supports signature version 2.  The
-    SimpleNotificationService (require 'product/sns') class is a concrete
-    subclass supporting SNS.  Similar classes should be able to similarly
-    subclass AbstractSig2Product in order to support other AWS services.
+    SimpleNotificationService class is a concrete subclass supporting SNS.  
+    Similar classes should be able to similarly subclass AbstractSig2Product 
+    in order to support other AWS services.
     Only a single instance of any product's class should be required to
     serve any number of requests using the same credentials, host and scheme.
     
@@ -33,13 +33,6 @@ classes for each of the AWS services it supports.
     a Request every time a URL is to be generated, provide it with the proper
     values to perform a requested action and then return the request object.
     The URL and its components can then be queried from the request object.
-
-Since the ultimate intent of Rubizon is to support requests to many of the AWS
-services, even though a given application may only need access to a small number
-of the supported services, the main rubizon.rb file only requires the core
-code.  An interface for each AWS product are maintained in the rubizon/product
-directory and will need to be specifically required into any code needing its
-services.
 
 ===An example of publishing a message via SNS:
 <tt>

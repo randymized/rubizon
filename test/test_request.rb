@@ -1,5 +1,4 @@
 require 'helper'
-require 'rubizon/abstract_sig2_product'  # this would normally be required by the specific product's implementation file
 
 class TestRequest < Test::Unit::TestCase
   @@credentials= Rubizon::SecurityCredentials.new('00000000000000000000','1234567890')

@@ -1,5 +1,4 @@
 require 'helper'
-require 'rubizon/product/sns'
 
 class TestSNS < Test::Unit::TestCase
   @@access_key= '00000000000000000000'

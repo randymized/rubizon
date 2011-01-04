@@ -1,5 +1,3 @@
-require 'cgi'
-require File.dirname(__FILE__) + "/../abstract_sig2_product"
 module Rubizon
   # Define a class that generates requests for operations on the Product
   # Advertising API

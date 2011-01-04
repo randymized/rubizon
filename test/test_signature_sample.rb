@@ -1,5 +1,4 @@
 require 'helper'
-require 'rubizon/product/product_advertising'
 
 # This is a special test based upon a signature generation sample at
 # http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/index.html?rest-signature.html
