@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rubizon}
-  s.version = "0.1.0"
+  s.version = "0.2.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Randy McLaughlin"]
@@ -30,7 +30,6 @@ interpretation of results.
     "LICENSE.txt",
     "README.rdoc",
     "Rakefile",
-    "VERSION",
     "lib/rubizon.rb",
     "lib/rubizon/abstract_sig2_product.rb",
     "lib/rubizon/exceptions.rb",
@@ -38,13 +37,15 @@ interpretation of results.
     "lib/rubizon/product/sns.rb",
     "lib/rubizon/request.rb",
     "lib/rubizon/security_credentials.rb",
+    "lib/rubizon/version.rb",
     "rubizon.gemspec",
     "test/helper.rb",
     "test/test_abstract_sig2_product.rb",
     "test/test_request.rb",
     "test/test_security_credentials.rb",
     "test/test_signature_sample.rb",
-    "test/test_sns.rb"
+    "test/test_sns.rb",
+    "test/test_version.rb"
   ]
   s.homepage = %q{http://github.com/randymized/rubizon}
   s.licenses = ["MIT"]
@@ -57,7 +58,8 @@ interpretation of results.
     "test/test_request.rb",
     "test/test_security_credentials.rb",
     "test/test_signature_sample.rb",
-    "test/test_sns.rb"
+    "test/test_sns.rb",
+    "test/test_version.rb"
   ]
 
   if s.respond_to? :specification_version then
