@@ -10,9 +10,11 @@ end
 require 'rake'
 
 require 'jeweler'
+require 'lib/rubizon/version'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "rubizon"
+  gem.version = Rubizon::Version::STRING
   gem.homepage = "http://github.com/randymized/rubizon"
   gem.license = "MIT"
   gem.summary = %Q{A Ruby interface to Amazon Web Services}
@@ -51,7 +53,6 @@ task :default => :test
 
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
-  require 'lib/rubizon/version'
   version = Rubizon::Version::STRING
 
   rdoc.rdoc_dir = 'rdoc'
