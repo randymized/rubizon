@@ -53,7 +53,7 @@ end
 task :default => :spec
 
 require 'rdoc/task'
-Rake::RDocTask.new do |rdoc|
+RDoc::Task.new do |rdoc|
   version = Rubizon::Version::STRING
 
   rdoc.rdoc_dir = 'rdoc'
