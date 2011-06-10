@@ -1,13 +1,12 @@
-require 'helper'
+require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-class TestSNS < Test::Unit::TestCase
+describe "SimpleNotificationService" do
   @@access_key= '00000000000000000000'
   @@credentials= Rubizon::SecurityCredentials.new(@@access_key,'1234567890')
   @@arn= 'arn:aws:sns:us-east-1:123456789:My-Topic'
   @@host= 'sns.us-east-1.amazonaws.com'
   @@snsProduct= Rubizon::SimpleNotificationService.new(@@credentials,@@host)
-  context "A SimpleNotificationService instance" do
-    should "formulate a url that will publish a message to a topic" do
+    it "formulates a url that will publish a message to a topic" do
       message= 'hello world'
       req= @@snsProduct.topic(@@arn).publish(message)
       assert_equal "http://#{@@host}/", req.endpoint
@@ -23,7 +22,7 @@ class TestSNS < Test::Unit::TestCase
       assert_equal message, CGI::unescape(q['Message'].first)
       assert !q.has_key?('Subject')
     end
-    should "formulate a url that will publish a message and a subject to a topic" do
+    it "formulates a url that will publish a message and a subject to a topic" do
       message= 'world'
       subject= 'An important word'
       req= @@snsProduct.topic(@@arn).publish(message,subject)
@@ -33,5 +32,4 @@ class TestSNS < Test::Unit::TestCase
       assert_equal message, CGI::unescape(q['Message'].first)
       assert_equal subject, CGI::unescape(q['Subject'].first)
     end
-  end
 end

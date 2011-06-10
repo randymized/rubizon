@@ -1,4 +1,4 @@
-require 'helper'
+require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 # This is a special test based upon a signature generation sample at
 # http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/index.html?rest-signature.html
@@ -8,7 +8,7 @@ require 'helper'
 # This also serves as a test of the integration of security credentials,
 # Actions, Products and Requests in order to generate a properly formed URL.
 
-class TestSignatureSample < Test::Unit::TestCase
+describe "Signature generation sample" do
   @@credentials= Rubizon::SecurityCredentials.new('00000000000000000000','1234567890')
   @@eCommerceServiceProduct= Rubizon::ProductAdvertisingProduct.new(@@credentials)
   @@eCommerceServiceRequestSubject= {
@@ -18,8 +18,7 @@ class TestSignatureSample < Test::Unit::TestCase
     'Timestamp'=>'2009-01-01T12:00:00Z'
   }
   @@expectedSignature= 'Nace%2BU3Az4OhN7tISqgs1vdLBHBEijWcBeCqL5xN9xg%3D'
-  context "The signature generation example" do
-    should "calculate the signature (version 2) expected in the example" do
+    it "calculates the signature (version 2) expected in the example" do
       req= @@eCommerceServiceProduct.item_lookup_request(@@eCommerceServiceRequestSubject)
       q= req.query_string
       assert_equal <<____.rstrip, req.canonical_querystring
@@ -33,22 +32,22 @@ AWSAccessKeyId=00000000000000000000&ItemId=0679722769&Operation=ItemLookup&Respo
 ____
       assert_equal @@expectedSignature, CGI::escape(CGI::parse(q)['Signature'].first)
     end
-    should "Create a URL that contains the expected host name for the sample request" do
+    it "Creates a URL that contains the expected host name for the sample request" do
       req= @@eCommerceServiceProduct.item_lookup_request(@@eCommerceServiceRequestSubject)
       uri = URI.parse(req.url);
       assert_equal @@eCommerceServiceProduct.host, uri.host
     end
-    should "Create a URL that contains the expected path for the sample request" do
+    it "Creates a URL that contains the expected path for the sample request" do
       req= @@eCommerceServiceProduct.item_lookup_request(@@eCommerceServiceRequestSubject)
       uri = URI.parse(req.url);
       assert_equal @@eCommerceServiceProduct.path, uri.path
     end
-    should "Create a URL that contains the expected scheme for the sample request" do
+    it "Creates a URL that contains the expected scheme for the sample request" do
       req= @@eCommerceServiceProduct.item_lookup_request(@@eCommerceServiceRequestSubject)
       uri = URI.parse(req.url);
       assert_equal @@eCommerceServiceProduct.scheme, uri.scheme
     end
-    should "Create a URL that contains the expected query string for the sample request" do
+    it "Creates a URL that contains the expected query string for the sample request" do
       req= @@eCommerceServiceProduct.item_lookup_request(@@eCommerceServiceRequestSubject)
       uri = URI.parse(req.url);
       query= CGI::parse(uri.query)
@@ -61,5 +60,4 @@ ____
       assert_equal @@expectedSignature, CGI::escape(query.delete('Signature').first)
       assert query.empty?   #there's nothing left!  All elements are accounted for
     end
-  end
 end

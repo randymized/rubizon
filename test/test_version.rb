@@ -1,9 +1,7 @@
-require 'helper'
+require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-class TestVersion < Test::Unit::TestCase
-  context "Rubizon" do
-    should "report its version" do
+describe "Version" do
+    it "reports its version" do
       assert_equal "#{Rubizon::Version::MAJOR}.#{Rubizon::Version::MINOR}.#{Rubizon::Version::PATCH}", Rubizon::Version::STRING
     end
-  end
 end
