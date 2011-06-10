@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'rubygems'
 require 'bundler'
 begin
@@ -10,12 +12,14 @@ end
 require 'rake'
 
 require 'jeweler'
-require 'lib/rubizon/version'
+$: << File.join(File.dirname(__FILE__),'lib')
+
+require 'rubizon/version'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "rubizon"
-  gem.version = Rubizon::Version::STRING
   gem.homepage = "http://github.com/randymized/rubizon"
+  gem.version = Rubizon::Version::STRING
   gem.license = "MIT"
   gem.summary = %Q{A Ruby interface to Amazon Web Services}
   gem.description = %Q{A Ruby interface to Amazon Web Services.  Rubizon separates creating a
@@ -35,24 +39,21 @@ interpretation of results.
 end
 Jeweler::RubygemsDotOrgTasks.new
 
-require 'rake/testtask'
-Rake::TestTask.new(:test) do |test|
-  test.libs << 'lib' << 'test'
-  test.pattern = 'test/**/test_*.rb'
-  test.verbose = true
+require 'rspec/core'
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new(:spec) do |spec|
+  spec.pattern = FileList['spec/**/*_spec.rb']
 end
 
-require 'rcov/rcovtask'
-Rcov::RcovTask.new do |test|
-  test.libs << 'test'
-  test.pattern = 'test/**/test_*.rb'
-  test.verbose = true
+RSpec::Core::RakeTask.new(:rcov) do |spec|
+  spec.pattern = 'spec/**/*_spec.rb'
+  spec.rcov = true
 end
 
-task :default => :test
+task :default => :spec
 
-require 'rake/rdoctask'
-Rake::RDocTask.new do |rdoc|
+require 'rdoc/task'
+RDoc::Task.new do |rdoc|
   version = Rubizon::Version::STRING
 
   rdoc.rdoc_dir = 'rdoc'
