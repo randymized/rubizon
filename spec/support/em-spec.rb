@@ -6,15 +6,6 @@ module EventMachine
     
     SpecTimeoutExceededError = Class.new(RuntimeError)
     
-    def self.included(cls)
-      ::Spec::Example::ExampleGroup.instance_eval "
-      @@_em_default_time_to_finish = nil
-      def self.default_timeout(timeout)
-        @@_em_default_time_to_finish = timeout
-      end
-      "
-    end
-    
     def timeout(time_to_run)
       EM.cancel_timer(@_em_timer) if @_em_timer
       @_em_timer = EM.add_timer(time_to_run) { done; raise SpecTimeoutExceededError.new }
