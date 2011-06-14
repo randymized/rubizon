@@ -1,9 +1,10 @@
 require 'eventmachine'
-require File.dirname(__FILE__) + '/../ext/fiber18'
+require 'fiber'
+#require File.dirname(__FILE__) + '/../ext/fiber18'
 
 module EventMachine
   module SpecHelper
-    
+    @@_em_default_time_to_finish= 3
     SpecTimeoutExceededError = Class.new(RuntimeError)
     
     def timeout(time_to_run)
