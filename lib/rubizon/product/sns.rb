@@ -6,16 +6,17 @@ module Rubizon
     # Initialize the SNS interface.  Each instance supports requests to one
     # topic.
     #
-    # credentials - A SecurityCredentials object that encapsulates the
-    #               access and secret ids to be used for this product.
-    # arn         - The topic served by this object
-    # scheme      - (optional - default: http) May set to 'https' if supported.
-    def initialize(credentials,host,scheme='http')
+    # workers - A Workers object that provides the security credentials,
+    #           network interface, xml_parser and other workers that this
+    #           object will use to process requests
+    # arn     - The topic served by this object
+    # scheme  - (optional - default: http) May set to 'https' if supported.
+    def initialize(workers,host,scheme='http')
       super(
         :scheme=>scheme,
         :host=>host
       )
-      @credentials= credentials
+      @workers= workers
     end
     
     # Create a Request object that can be used to formulate a single request
@@ -23,7 +24,7 @@ module Rubizon
     #
     # Returns an instance of Request
     def create_request
-      super(@credentials)
+      super(@workers)
     end
 
     class Topic

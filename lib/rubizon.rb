@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/rubizon/security_credentials'
+require File.dirname(__FILE__) + '/rubizon/workers'
 require File.dirname(__FILE__) + '/rubizon/request'
 require File.dirname(__FILE__) + '/rubizon/errors'
 module Rubizon

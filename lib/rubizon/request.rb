@@ -2,7 +2,7 @@ require 'cgi'
 module Rubizon
   # Represents a request to be made to AWS.
   #
-  # Starts with access credentials and specifications for the product, 
+  # Starts with credentials, workers and specifications for the product, 
   # such as its ARN, elements of its URL and query elements.  
   # To this is added specifications for the specific action to be performed.
   # 
@@ -14,7 +14,7 @@ module Rubizon
   class Request
     # Initialize the request.
     #
-    # credentials    - A Rubizon::SecurityCredentials object that 
+    # workers        - A Rubizon::SecurityCredentials object that 
     #                  encapsulates an AWS key pair.
     #                  It will be used to sign the request.
     # scheme         - The scheme to be used: 'http' or 'https'
@@ -34,8 +34,9 @@ module Rubizon
     #                        present, signature version 1 is implied.
     #                SignatureMethod - The signature methods defined for version
     #                        two are HmacSHA256 and HmacSHA1.
-    def initialize(credentials,scheme,host,path,query_elements={})
-      @credentials= credentials
+    def initialize(workers,scheme,host,path,query_elements={})
+      @workers= workers
+      @credentials= workers.credentials
       @scheme= scheme
       @host= host
       @path= path

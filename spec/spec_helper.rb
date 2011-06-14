@@ -16,12 +16,6 @@ require 'rubizon/ev_make_request' # use the EventMachine network interface
 # in ./support/ and its subdirectories.
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
-#The following file is not committed into the project and must be provided by you.
-#It must include a line like the following, except with valid creditials that 
-#allow the tests to access all AWS resources needed for the tests.
-#TestCredentials= Rubizon::SecurityCredentials.new('<your access key id>','<your secret access key>')
-require File.dirname(__FILE__) + '/../private/aws'
-
 RSpec.configure do |config|
   
 end

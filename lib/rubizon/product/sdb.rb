@@ -5,15 +5,16 @@ module Rubizon
   class SimpleDBService < AbstractSig2Product
     # Initialize the SDB interface.  One instance serves one endpoint
     #
-    # credentials - A SecurityCredentials object that encapsulates the
-    #               access and secret ids to be used for this product.
+    # workers - A Workers object that provides the security credentials,
+    #           network interface, xml_parser and other workers that this
+    #           object will use to process requests
     # endpoint    - The endpoint
-    def initialize(credentials,endpoint='sdb.amazonaws.com')
+    def initialize(workers,endpoint='sdb.amazonaws.com')
       super(
         :scheme=>'http',
         :host=>endpoint
       )
-      @credentials= credentials
+      @workers= workers
     end
     
     # Create a Request object that can be used to formulate a single request
@@ -21,7 +22,7 @@ module Rubizon
     #
     # Returns an instance of Request
     def create_request(query_elements=nil)
-      r= super(@credentials)
+      r= super(@workers)
       r.add_query_elements('Version'=>'2009-04-15')
       r.add_query_elements(query_elements) if query_elements
       r

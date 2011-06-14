@@ -4,7 +4,7 @@ require 'ruby-debug'
 
 describe "The AWS SimpleDB interface" do
   before do
-    @sdb= Rubizon::SimpleDBService.new(TestCredentials)
+    @sdb= Rubizon::SimpleDBService.new(TestWorker)
   end
   it "creates a domain"
   it "deletes a domain"

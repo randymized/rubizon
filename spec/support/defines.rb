@@ -9,3 +9,4 @@ SecretAccessKeyId= '1234567890'
 #TestCredentials= Rubizon::SecurityCredentials.new('<your access key id>','<your secret access key>')
 require File.dirname(__FILE__) + '/../../private/aws'
 
+TestWorker= Rubizon::Workers.new(TestCredentials)

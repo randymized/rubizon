@@ -107,8 +107,13 @@ module Rubizon
     # for this product.
     #
     # Returns an instance of Request
-    def create_request(credentials)
-      Request.new(credentials,@scheme,@host,@path,@query_elements)
+    def create_request(workers)
+      # In the orginal design of this method, only security credentials were
+      # sent as an argument.  Create a worker that incorporates those credentials,
+      # but only generates URLs without actually sending requests to AWS and
+      # processing the response.
+      workers= Workers.new(workers) if workers.is_a? SecurityCredentials
+      Request.new(workers,@scheme,@host,@path,@query_elements)
     end
 
   protected 
@@ -118,7 +123,7 @@ module Rubizon
     # hostname and other information needed to get (or post, put or delete)
     # a resource from AWS can then be obtained via Request methods.
     def basic_action(action_elements,subject_elements=nil)
-      req= create_request(@credentials)
+      req= create_request(@workers)
       req.add_query_elements(action_elements)
       req.add_query_elements(subject_elements) if subject_elements
     end

@@ -6,7 +6,9 @@ describe "Request" do
       @product= 'sns'
       @arn= "arn:aws:#{@product}:#{@region}:123456789:My-Topic" #arn:aws:sns:us-east-1:123456789:My-Topic
       @host= "#{@product}.#{@region}.amazonaws.com"
-      @credentials= Rubizon::SecurityCredentials.new('00000000000000000000','1234567890')
+      @workers= Rubizon::Workers.new(
+        Rubizon::SecurityCredentials.new('00000000000000000000','1234567890')
+      )
       @eCommerceServiceProduct= Rubizon::AbstractSig2Product.new(
         :scheme=>'http',
         :host=>'webservices.amazon.com',
@@ -27,57 +29,57 @@ describe "Request" do
       prod= Rubizon::AbstractSig2Product.new(
         :arn=>@arn
       )
-      req= prod.create_request(@credentials)
+      req= prod.create_request(@workers)
       @host.should == req.host
     end
     it "reports the product's scheme" do
       prod= Rubizon::AbstractSig2Product.new(
         :arn=>@arn
       )
-      req= prod.create_request(@credentials)
+      req= prod.create_request(@workers)
       req.scheme.should == 'https'
     end
     it "reports the product's path" do
       prod= Rubizon::AbstractSig2Product.new(
         :arn=>@arn
       )
-      req= prod.create_request(@credentials)
+      req= prod.create_request(@workers)
       req.path.should == '/'
     end
     it "reports the product's endpoint" do
       prod= Rubizon::AbstractSig2Product.new(
         :arn=>@arn
       )
-      req= prod.create_request(@credentials)
+      req= prod.create_request(@workers)
       req.endpoint.should == 'https://sns.us-east-1.amazonaws.com/'
     end
     it "Creates a URL that contains the expected host name for the sample request" do
-      req= @eCommerceServiceProduct.create_request(@credentials)
+      req= @eCommerceServiceProduct.create_request(@workers)
       req.add_query_elements @eCommerceServiceRequestElements
       uri = URI.parse(req.url);
       uri.host.should == @eCommerceServiceProduct.host
     end
     it "Creates a URL that contains the expected path for the sample request" do
-      req= @eCommerceServiceProduct.create_request(@credentials)
+      req= @eCommerceServiceProduct.create_request(@workers)
       req.add_query_elements @eCommerceServiceRequestElements
       uri = URI.parse(req.url);
       uri.path.should == @eCommerceServiceProduct.path
     end
     it "Creates a URL that contains the expected scheme for the sample request" do
-      req= @eCommerceServiceProduct.create_request(@credentials)
+      req= @eCommerceServiceProduct.create_request(@workers)
       req.add_query_elements @eCommerceServiceRequestElements
       uri = URI.parse(req.url);
       uri.scheme.should == @eCommerceServiceProduct.scheme
     end
     it "Creates a URL that contains the expected query string for the sample request" do
-      req= @eCommerceServiceProduct.create_request(@credentials)
+      req= @eCommerceServiceProduct.create_request(@workers)
       req.add_query_elements @eCommerceServiceRequestElements
       uri = URI.parse(req.url);
       query= CGI::parse(uri.query)
       @eCommerceServiceRequestElements.each do |k,v|
         v.should == query.delete(k).first
       end
-      @credentials.accessID.should == query.delete('AWSAccessKeyId').first
+      @workers.credentials.accessID.should == query.delete('AWSAccessKeyId').first
       @expectedSignature.should == CGI::escape(query.delete('Signature').first)
       query.should be_empty   #there's nothing left!  All elements are accounted for
     end

@@ -5,10 +5,11 @@ module Rubizon
   class ProductAdvertisingProduct < AbstractSig2Product
     # Initialize the product interface.
     #
-    # credentials - A SecurityCredentials object that encapsulates the
-    #               access and secret ids to be used for this product.
-    # scheme      - (optional - default: http) May set to 'https' if supported.
-    def initialize(credentials,scheme='http')
+    # workers - A Workers object that provides the security credentials,
+    #           network interface, xml_parser and other workers that this
+    #           object will use to process requests
+    # scheme  - (optional - default: http) May set to 'https' if supported.
+    def initialize(workers,scheme='http')
       super(
         :scheme=>scheme,
         :host=>'webservices.amazon.com',
@@ -16,7 +17,7 @@ module Rubizon
         '_omit' => ['SignatureMethod','SignatureVersion'],
         'Service'=>'AWSECommerceService'
       )
-      @credentials= credentials
+      @workers= workers
     end
 
     # Create a request for an item lookup.  The URL to use may be obtained
