@@ -40,8 +40,25 @@ module Rubizon
       @host= host
       @path= path
       @query_elements= query_elements.dup
+      @responder_class= nil
     end
 
+    # Specify the class of the responder to use with this request.
+    # An instance of that class will be created when a response is received from 
+    # AWS as a result of this request.  That responder is then responsible for
+    # checking for errors, extracting the useful data form the response and
+    # returning the data in a useful and appropriate format.
+    #
+    # Returns self, to allow chaining of requests.
+    def responder_class=(rf)
+      @responder_class= rf
+      self
+    end
+    
+    def responder
+      @responder_class.new
+    end
+    
     # Append additional elements to the currently defined path.
     def append_to_path(path)
       @path+= path
