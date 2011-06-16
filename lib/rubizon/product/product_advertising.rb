@@ -6,7 +6,7 @@ module Rubizon
     # Initialize the product interface.
     #
     # workers - A Workers object that provides the security credentials,
-    #           network interface, xml_parser and other workers that this
+    #           network interface and other workers that this
     #           object will use to process requests
     # scheme  - (optional - default: http) May set to 'https' if supported.
     def initialize(workers,scheme='http')

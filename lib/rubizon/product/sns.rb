@@ -7,7 +7,7 @@ module Rubizon
     # topic.
     #
     # workers - A Workers object that provides the security credentials,
-    #           network interface, xml_parser and other workers that this
+    #           network interface and other workers that this
     #           object will use to process requests
     # arn     - The topic served by this object
     # scheme  - (optional - default: http) May set to 'https' if supported.
