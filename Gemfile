@@ -1,7 +1,7 @@
 source "http://rubygems.org"
 # Add dependencies required to use your gem here.
   gem "ruby-hmac", "~> 0.4.0", :require => "ruby_hmac"
-  gem 'xml-simple', :require => "xmlsimple"
+  gem 'libxml-ruby', :require => "libxml"
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.

@@ -1,6 +1,4 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
-require 'xmlsimple'
-require 'ruby-debug'
 
 describe "The AWS SimpleDB interface" do
   before do
@@ -9,7 +7,10 @@ describe "The AWS SimpleDB interface" do
   it "creates a domain"
   it "deletes a domain"
   it "lists domains" do
-    Rubizon::make_request(@sdb.list_domains)
+    r= @sdb.list_domains.request
+    r.should be_an Array
+    r.first.should be_a String
+    r.first.should == ''
   end
   it "gets a domain's metadata"
   it "creates an item"

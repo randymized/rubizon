@@ -1,7 +1,10 @@
 require File.dirname(__FILE__) + '/rubizon/security_credentials'
 require File.dirname(__FILE__) + '/rubizon/workers'
+require File.dirname(__FILE__) + '/rubizon/base_responder'
 require File.dirname(__FILE__) + '/rubizon/request'
+require File.dirname(__FILE__) + '/rubizon/responder'
 require File.dirname(__FILE__) + '/rubizon/errors'
+require File.dirname(__FILE__) + '/rubizon/status_and_body'
 module Rubizon
   autoload :Version, File.dirname(__FILE__) + '/rubizon/version'
   autoload :AbstractSig2Product, File.dirname(__FILE__) + '/rubizon/abstract_sig2_product'

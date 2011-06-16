@@ -6,7 +6,7 @@ module Rubizon
     # Initialize the SDB interface.  One instance serves one endpoint
     #
     # workers - A Workers object that provides the security credentials,
-    #           network interface, xml_parser and other workers that this
+    #           network interface, and other workers that this
     #           object will use to process requests
     # endpoint    - The endpoint
     def initialize(workers,endpoint='sdb.amazonaws.com')
@@ -27,27 +27,6 @@ module Rubizon
       r.add_query_elements(query_elements) if query_elements
       r
     end
-        
-    class BaseResponder
-      def call(status,response)
-        unless status == 200
-          parsed= XmlSimple.xml_in(response,:ForceArray=>true)
-          info= parsed['Errors'].first['Error'].first
-          errname= 'AWS'+info['Code'].first+'Error'
-          errclass= status/100 == '5' ? Class.new(Rubizon::AWSServerError) : Class.new(Rubizon::AWSClientError)
-          Rubizon.const_set(errname,errclass) unless Rubizon.const_defined?(errname)
-          raise Rubizon.const_get(errname).new(info['Message'].first)
-        end
-      end
-    end
-    class ListDomainsResponder < BaseResponder
-      def call(status,response)
-        super(status,response)
-        xopts= {:ForceArray=>false,:GroupTags=>{'ListDomainsResult'=>'DomainName'}}
-        parsed= XmlSimple.xml_in(response,xopts)
-        parsed['ListDomainsResult']
-      end
-    end
     
     # List domains
     #
@@ -60,7 +39,15 @@ module Rubizon
       request= create_request('Action'=>'ListDomains')
       request.add_query_elements('MaxNumberOfDomains'=>max_number_of_domains) if max_number_of_domains
       request.add_query_elements('NextToken'=>next_token) if next_token
-      request.responder_class= ListDomainsResponder
+      request.responder= Responder.new %q{
+        ListDomainsResponse:
+          ListDomainsResult:
+            DomainName: element domain_names
+            NextToken: kv
+          ResponseMetadata:
+            RequestId: kv
+            BoxUsage: kv
+      }
       request
     end
 
