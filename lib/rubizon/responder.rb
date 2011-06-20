@@ -18,10 +18,36 @@ module Rubizon
     # to the YAML instructions.
     #
     # xml - the XML received from AWS
-    def process(xml)
+    def process(status_and_body)
+      unless status_and_body.status == 200
+        raise_alarm(status_and_body)  #we have a problem
+      end
+
       #turn the YAML into a set of instructions that will guide the XML interpretation process
       @instructions||= BuildParser.new.analyze(@yaml)
-      XMLConverter.new(@instructions).process(xml.body)
+      XMLConverter.new(@instructions).process(status_and_body.body)
+    end
+    
+  protected
+    # Invoked if the HTTP result code != 200.  Raise an exception!  
+    # Some kind of error has occurred.
+    def raise_alarm(status_and_body)
+      h= {:code=>'Undeciphered',:message=>status_and_body.body}  #define and set throw-away defaults
+      reader= LibXML::XML::Reader.string(status_and_body.body)
+      while reader.read
+        if reader.node_type == LibXML::XML::Reader::TYPE_ELEMENT
+          case reader.name
+            when 'Code'
+              h[:code]= reader.read_string
+            when 'Message'
+              h[:message]= reader.read_string
+          end
+        end
+      end
+      errname= 'AWS'+h[:code]+'Error'
+      errclass= status_and_body.status/100 == '5' ? Class.new(Rubizon::AWSServerError) : Class.new(Rubizon::AWSClientError)
+      Rubizon.const_set(errname,errclass) unless Rubizon.const_defined?(errname)
+      raise Rubizon.const_get(errname).new(h[:message])
     end
   end
 
