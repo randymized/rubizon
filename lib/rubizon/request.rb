@@ -40,13 +40,13 @@ module Rubizon
         query_elements= path
         path= host
         host= scheme
-        scheme= method
+        scheme= method.to_s
         method= 'GET'
       end
-      @method= method.upcase
+      @method= method.to_s.upcase
       @workers= workers
       @credentials= workers.credentials
-      @scheme= scheme
+      @scheme= scheme.to_s
       @host= host
       @path= path
       @query_elements= query_elements.dup
@@ -104,6 +104,11 @@ module Rubizon
       self
     end
 
+    # Change the HTTP method
+    def method=(method)
+      @method= method.to_s.upcase
+    end
+    
     # Returns the HTTP method, such as GET or POST
     attr_reader :method
 
