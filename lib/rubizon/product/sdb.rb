@@ -12,7 +12,7 @@ module Rubizon
     def initialize(workers,specs={})
       super(
         {:method=>'GET',
-        :scheme=>'http',
+        :scheme=>'https',
         :host=>'sdb.amazonaws.com'}.merge(specs)
       )
       @workers= workers
@@ -40,15 +40,16 @@ module Rubizon
       request= create_request('GET','Action'=>'ListDomains')
       request.add_query_elements('MaxNumberOfDomains'=>max_number_of_domains) if max_number_of_domains
       request.add_query_elements('NextToken'=>next_token) if next_token
-      request.responder= Responder.new %q{
-        ListDomainsResponse:
-          ListDomainsResult:
-            DomainName: element domain_names
-            NextToken: kv
-          ResponseMetadata:
-            RequestId: kv
-            BoxUsage: kv
-      }
+      request.responder= (@list_domains_responder||= Responder.new %q{
+          ListDomainsResponse:
+            ListDomainsResult:
+              DomainName: element domain_names
+              NextToken: kv
+            ResponseMetadata:
+              RequestId: kv
+              BoxUsage: kv
+        }
+      )
       request
     end
 
