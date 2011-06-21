@@ -11,7 +11,7 @@ module Rubizon
     # endpoint    - The endpoint
     def initialize(workers,specs={})
       super(
-        {:method=>'POST',
+        {:method=>'GET',
         :scheme=>'http',
         :host=>'sdb.amazonaws.com'}.merge(specs)
       )
@@ -22,8 +22,8 @@ module Rubizon
     # for this product.
     #
     # Returns an instance of Request
-    def create_request(query_elements=nil)
-      r= super(@workers)
+    def create_request(method,query_elements=nil)
+      r= super(@workers,method)
       r.add_query_elements('Version'=>'2009-04-15')
       r.add_query_elements(query_elements) if query_elements
       r
@@ -37,7 +37,7 @@ module Rubizon
     #                         to start the next list of domain names
     # Returns an instance of Request
     def list_domains(max_number_of_domains=nil,next_token=nil)
-      request= create_request('Action'=>'ListDomains')
+      request= create_request('GET','Action'=>'ListDomains')
       request.add_query_elements('MaxNumberOfDomains'=>max_number_of_domains) if max_number_of_domains
       request.add_query_elements('NextToken'=>next_token) if next_token
       request.responder= Responder.new %q{
