@@ -9,11 +9,11 @@ module Rubizon
     #           network interface, and other workers that this
     #           object will use to process requests
     # endpoint    - The endpoint
-    def initialize(workers,endpoint='sdb.amazonaws.com')
+    def initialize(workers,specs={})
       super(
-        :method=>'POST',
+        {:method=>'POST',
         :scheme=>'http',
-        :host=>endpoint
+        :host=>'sdb.amazonaws.com'}.merge(specs)
       )
       @workers= workers
     end
