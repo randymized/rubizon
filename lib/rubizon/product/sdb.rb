@@ -11,6 +11,7 @@ module Rubizon
     # endpoint    - The endpoint
     def initialize(workers,endpoint='sdb.amazonaws.com')
       super(
+        :method=>'POST',
         :scheme=>'http',
         :host=>endpoint
       )

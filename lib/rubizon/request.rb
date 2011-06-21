@@ -14,9 +14,8 @@ module Rubizon
   class Request
     # Initialize the request.
     #
-    # workers        - A Rubizon::SecurityCredentials object that 
-    #                  encapsulates an AWS key pair.
-    #                  It will be used to sign the request.
+    # workers - A Workers object that provides the security credentials,
+    #           network interface and other workers that this
     # scheme         - The scheme to be used: 'http' or 'https'
     # host           - The name of the HTTP host to serve this request
     # path           - The URL path, typically '/'.
@@ -34,7 +33,17 @@ module Rubizon
     #                        present, signature version 1 is implied.
     #                SignatureMethod - The signature methods defined for version
     #                        two are HmacSHA256 and HmacSHA1.
-    def initialize(workers,scheme,host,path,query_elements={})
+    def initialize(workers,method,scheme,host,path,query_elements={})
+      if path.is_a? Hash
+        # Method was an addition to the argument list.  Detect invocations where
+        # method was not specified and adjust accordingly.
+        query_elements= path
+        path= host
+        host= scheme
+        scheme= method
+        method= 'GET'
+      end
+      @method= method.upcase
       @workers= workers
       @credentials= workers.credentials
       @scheme= scheme
@@ -95,6 +104,9 @@ module Rubizon
       self
     end
 
+    # Returns the HTTP method, such as GET or POST
+    attr_reader :method
+
     # Returns the URL scheme, such as http or https
     attr_reader :scheme
     
@@ -105,6 +117,10 @@ module Rubizon
     # Returns the path part of the URL of the product served by this object,
     # typically '/'.
     attr_reader :path
+    
+    # Returns a hash containing the elements from which a query string would be
+    # built.
+    attr_reader :query_elements
     
     # Returns the product's endpoint.  The endpoint is that part of a URL that
     # includes the scheme, host, and path, but not the query string. 
@@ -119,10 +135,23 @@ module Rubizon
     # such as SignatureVersion
     #
     # The query string, once created, is immutable.
-    def query_string
+    def query_string(method='GET')
       return @query_string ||=
         if @query_elements['SignatureVersion'].to_i == 2
-          query_string_sig2
+          query_string_sig2(method).collect { |key, value| [url_encode(key), url_encode(value)].join("=") }.join('&') # order doesn't matter for the actual request
+        else
+          raise UnsupportedSignatureVersionError, 'Only signature version 2 requests are supported at this time'
+        end
+    end
+    
+    
+    # Return a signed hash that includes all elements that would be in a query string.
+    #
+    # The query hash, once created, is immutable.
+    def query_hash(method='POST')
+      return @query_hash ||=
+        if @query_elements['SignatureVersion'].to_i == 2
+          query_string_sig2(method)
         else
           raise UnsupportedSignatureVersionError, 'Only signature version 2 requests are supported at this time'
         end
@@ -147,7 +176,7 @@ module Rubizon
       
     protected
     # Create a query string and sign it using the signature version 2 algorithm.
-    def query_string_sig2
+    def query_string_sig2(method='GET')
       @query_elements['Timestamp']= Time::at(Time.now).utc.strftime("%Y-%m-%dT%H:%M:%S.000Z") unless @query_elements['Timestamp']
       @query_elements['AWSAccessKeyId']= @credentials.accessID
       signature_method= @query_elements['SignatureMethod']
@@ -160,14 +189,14 @@ module Rubizon
       values = @query_elements.keys.sort.collect {|key|  [url_encode(key), url_encode(@query_elements[key])].join("=") }
       @canonical_querystring= values.join("&")
       @string_to_sign = <<"____".rstrip
-GET
+#{method}
 #{URI::parse(endpoint).host}
 #{URI::parse(endpoint).path}
 #{@canonical_querystring}
 ____
       signature= @credentials.sign(signature_method,@string_to_sign)
       @query_elements['Signature'] = signature
-      @query_elements.collect { |key, value| [url_encode(key), url_encode(value)].join("=") }.join('&') # order doesn't matter for the actual request
+      @query_elements
     end
     def url_encode(string)
       string = string.to_s

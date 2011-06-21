@@ -8,6 +8,7 @@ module Rubizon
     # Initialization
     #
     # specs -      A Hash containing specifications for the product.
+    #              :method - (optional) GET, POST, etc.  GET is default.
     #              :scheme - (optional) Default scheme is https.  
     #                        May be set to "http".
     #              :host   - (conditionally required) If an ARN is not
@@ -37,6 +38,7 @@ module Rubizon
     #                        These will be included in any query string 
     #                        generated for this product
     def initialize(specs={})
+      @method= specs.delete(:method) || 'GET'
       @scheme= (specs.delete(:scheme) || specs.delete('scheme') || 'https').to_s
       @arn= specs.delete(:ARN) || specs.delete('ARN') || specs.delete(:arn) || specs.delete('arn')
       @host= specs.delete(:host) || specs.delete('host')
@@ -113,7 +115,7 @@ module Rubizon
       # but only generates URLs without actually sending requests to AWS and
       # processing the response.
       workers= Workers.new(workers) if workers.is_a? SecurityCredentials
-      Request.new(workers,@scheme,@host,@path,@query_elements)
+      Request.new(workers,@method,@scheme,@host,@path,@query_elements)
     end
 
   protected 
