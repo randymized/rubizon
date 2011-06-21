@@ -52,6 +52,23 @@ module Rubizon
       )
       request
     end
+    
+    # Delete a domain
+    #
+    # domain_name - The name of the domain to delete
+    #
+    # Returns an instance of Request
+    def delete_domain(domain_name)
+      request= create_request('GET','Action'=>'DeleteDomain')
+      request.add_query_elements('DomainName'=>domain_name)
+      request.responder= Responder.new %q{
+        DeleteDomainResponse:
+          ResponseMetadata:
+            RequestId: kv
+            BoxUsage: kv
+      }
+      request
+    end
 
     class Domain
       # Work with items within one domain
