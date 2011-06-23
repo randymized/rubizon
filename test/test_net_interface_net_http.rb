@@ -1,26 +1,26 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'helper'
 
-describe "The network interface based on Net::HTTP" do
+class TestNetHTTPNetworkInterface < Test::Unit::TestCase
   def a_test(method,scheme)
     @sdb= Rubizon::SimpleDBService.new(TestWorker,:method=>method,:scheme=>scheme)
     request= @sdb.list_domains
     request.method= method
-    request.method.should == method.to_s
-    request.scheme.should == scheme.to_s
+    assert_equal(method.to_s, request.method)
+    assert_equal(scheme.to_s, request.scheme)
     r= Rubizon::NetworkInterface::NetHTTP.new.call(request)
-    r.status.should == 200
-    r.body.should be_a String
+    assert_equal(200, r.status)
+    assert_kind_of(String, r.body)
   end
-  it "sends a HTTP GET request" do
+  def test_sends_http_get
     a_test(:GET,:http);
   end
-  it "sends a HTTPS GET request" do
+  def test_sends_https_get
     a_test(:GET,:https);
   end
-  it "sends a HTTP POST request" do
+  def test_sends_http_post
     a_test(:POST,:http);
   end
-  it "sends a HTTPS POST request" do
+  def test_sends_https_post
     a_test(:POST,:https);
   end
 end
