@@ -22,8 +22,9 @@ module Rubizon
     # for this product.
     #
     # Returns an instance of Request
-    def create_request(method,query_elements=nil)
+    def create_request(method,responder_class,query_elements=nil)
       r= super(@workers,method)
+      r.responder_class= responder_class
       r.add_query_elements('Version'=>'2009-04-15')
       r.add_query_elements(query_elements) if query_elements
       r
@@ -37,20 +38,25 @@ module Rubizon
     #                         to start the next list of domain names
     # Returns an instance of Request
     def list_domains(max_number_of_domains=nil,next_token=nil)
-      request= create_request('GET','Action'=>'ListDomains')
+      request= create_request('GET',ListDomainsResponder,'Action'=>'ListDomains')
       request.add_query_elements('MaxNumberOfDomains'=>max_number_of_domains) if max_number_of_domains
       request.add_query_elements('NextToken'=>next_token) if next_token
-      request.responder= (@list_domains_responder||= Responder.new %q{
-          ListDomainsResponse:
-            ListDomainsResult:
-              DomainName: element domain_names
-              NextToken: kv
-            ResponseMetadata:
-              RequestId: kv
-              BoxUsage: kv
-        }
-      )
       request
+    end
+    class ListDomainsResponder < DefaultResponder
+      def initialize(status_and_body)
+        super(status_and_body,ArrayResult)
+      end
+      def process_node(node)
+        case node.name
+          when '<DomainName'
+            @result << node.value
+          when '<NextToken'
+            @result.meta[:NextToken]= node.value
+          else
+            super(node)
+        end
+      end
     end
     
     # Delete a domain
@@ -59,14 +65,8 @@ module Rubizon
     #
     # Returns an instance of Request
     def delete_domain(domain_name)
-      request= create_request('GET','Action'=>'DeleteDomain')
+      request= create_request('GET',DefaultResponder,'Action'=>'DeleteDomain')
       request.add_query_elements('DomainName'=>domain_name)
-      request.responder= Responder.new %q{
-        DeleteDomainResponse:
-          ResponseMetadata:
-            RequestId: kv
-            BoxUsage: kv
-      }
       request
     end
 

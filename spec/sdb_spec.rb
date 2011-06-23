@@ -9,8 +9,8 @@ describe "The AWS SimpleDB interface" do
   it "lists domains" do
     r= @sdb.list_domains.request
     r.should be_an Array
-    r.first.should be_a String
-    r.first.should == ''
+    r.meta.should have_key(:BoxUsage)
+    r.meta.should have_key(:RequestId)
   end
   it "gets a domain's metadata"
   it "creates an item"

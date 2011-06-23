@@ -15,6 +15,7 @@ GEM
     eventmachine (0.12.10)
     eventmachine (0.12.10-x86-mswin32)
     git (1.2.5)
+    hashery (1.4.0)
     jeweler (1.6.2)
       bundler (~> 1.0)
       git (>= 1.2.5)
@@ -52,6 +53,7 @@ DEPENDENCIES
   bundler (~> 1.0.0)
   em-http-request
   em-synchrony (~> 0.2.0)
+  hashery
   jeweler (~> 1.6.2)
   libxml-ruby
   rcov

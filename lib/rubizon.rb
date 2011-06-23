@@ -1,7 +1,9 @@
 require File.dirname(__FILE__) + '/rubizon/security_credentials'
 require File.dirname(__FILE__) + '/rubizon/workers'
+require File.dirname(__FILE__) + '/rubizon/xml_reader'
 require File.dirname(__FILE__) + '/rubizon/request'
-require File.dirname(__FILE__) + '/rubizon/responder'
+require File.dirname(__FILE__) + '/rubizon/results'
+require File.dirname(__FILE__) + '/rubizon/default_responder'
 require File.dirname(__FILE__) + '/rubizon/errors'
 require File.dirname(__FILE__) + '/rubizon/status_and_body'
 module Rubizon

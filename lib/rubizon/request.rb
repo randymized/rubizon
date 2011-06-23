@@ -50,7 +50,7 @@ module Rubizon
       @host= host
       @path= path
       @query_elements= query_elements.dup
-      @responder= nil
+      @responder_class= nil
     end
     
     # Actually make the request.  Send the message to AWS, receive and parse
@@ -60,9 +60,9 @@ module Rubizon
     # Returns whatever data is returned by the responder after processing
     # the response from AWS.
     def request
-      responder.process(
+      @responder_class.new(
         @workers.network_interface.call(self)
-      )
+      ).respond
     end
 
     # Specify the class of the responder to use with this request.
@@ -72,13 +72,9 @@ module Rubizon
     # returning the data in a useful and appropriate format.
     #
     # Returns self, to allow chaining of requests.
-    def responder=(rf)
-      @responder= rf
+    def responder_class=(rf)
+      @responder_class= rf
       self
-    end
-    
-    def responder
-      @responder
     end
     
     # Append additional elements to the currently defined path.
