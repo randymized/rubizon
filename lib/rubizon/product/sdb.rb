@@ -131,7 +131,7 @@ module Rubizon
       # consistent_read - When true, ensures that the most recent data is 
       #                     returned.
       def get_attributes(item_name,attribute_names=nil,consistent_read=false)
-        request= create_item_request(item_name)
+        request= create_item_request(:GetAttributes,item_name)
         request.add_query_elements('ConsistentRead'=>'true') if consistent_read
         if attribute_names
           if attribute_names.respond_to? :each
@@ -146,16 +146,18 @@ module Rubizon
       end
       
     protected
-      def create_request
-        @sdb.create_request.add_query_elements('DomainName'=>@domain_name)
+      def create_request(action,responder_class=DefaultResponder,method=:GET,query_elements=nil)
+        @sdb.create_request(action,responder_class,method,query_elements).
+          add_query_elements('DomainName'=>@domain_name)
       end
 
-      def create_item_request(item_name)
-        create_request.add_query_elements('ItemName'=>item_name)
+      def create_item_request(action,item_name,responder_class=DefaultResponder,method=:GET,query_elements=nil)
+        create_request(action,responder_class=DefaultResponder,method=:GET,query_elements=nil).
+          add_query_elements('ItemName'=>item_name)
       end
 
       def add_attributes_common(item_name,replace,attributes)
-        request= create_item_request(item_name)
+        request= create_item_request(:PutAttributes,item_name)
         i= 0
         attributes.each do |k,v|
           request.add_query_elements("Attribute.#{i}.Name"=>k.to_s)
