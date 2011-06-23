@@ -26,7 +26,7 @@ module Rubizon
     #                         to start the next list of domain names
     # Returns an instance of Request
     def list_domains(max_number_of_domains=nil,next_token=nil)
-      request= create_request('GET',ListDomainsResponder,'Action'=>'ListDomains')
+      request= create_request(:ListDomains,ListDomainsResponder)
       request.add_query_elements('MaxNumberOfDomains'=>max_number_of_domains) if max_number_of_domains
       request.add_query_elements('NextToken'=>next_token) if next_token
       request
@@ -53,7 +53,7 @@ module Rubizon
     #
     # Returns an instance of Request
     def create_domain(domain_name)
-      request= create_request('GET',DefaultResponder,'Action'=>'CreateDomain')
+      request= create_request(:CreateDomain)
       request.add_query_elements('DomainName'=>domain_name)
       request
     end
@@ -64,7 +64,7 @@ module Rubizon
     #
     # Returns an instance of Request
     def delete_domain(domain_name)
-      request= create_request('GET',DefaultResponder,'Action'=>'DeleteDomain')
+      request= create_request(:DeleteDomain)
       request.add_query_elements('DomainName'=>domain_name)
       request
     end
@@ -200,10 +200,10 @@ module Rubizon
     # for this product.
     #
     # Returns an instance of Request
-    def create_request(method,responder_class,query_elements=nil)
+    def create_request(action,responder_class=DefaultResponder,method=:GET,query_elements=nil)
       r= super(@workers,method)
       r.responder_class= responder_class
-      r.add_query_elements('Version'=>'2009-04-15')
+      r.add_query_elements('Version'=>'2009-04-15','Action'=>action)
       r.add_query_elements(query_elements) if query_elements
       r
     end
