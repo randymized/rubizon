@@ -3,10 +3,9 @@
 AWSAccessKeyId='00000000000000000000'
 SecretAccessKeyId= '1234567890'
 
-#The following file is not committed into the project and must be provided by you.
-#It must include a line like the following, except with valid creditials that 
-#allow the tests to access all AWS resources needed for the tests.
-#TestCredentials= Rubizon::SecurityCredentials.new('<your access key id>','<your secret access key>')
+# The following file is not committed into the project and must be provided by you.
+# A sample, for you to modify and save as private/aws.rb can be found at 
+# sample/private/aws.rb
 require File.dirname(__FILE__) + '/../../private/aws'
 
 require 'rubizon/network_interfaces/net_http'
