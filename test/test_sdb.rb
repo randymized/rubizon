@@ -8,34 +8,26 @@ class TestSimpleDB < Test::Unit::TestCase
   def setup
     @sdb= Rubizon::SimpleDBService.new(TestWorker)
   end
-  def test_creates_a_domain_makes_sure_it_is_listed_deletes_the_domain_and_confirms_deletion
+  def test_001_delete_test_domain_if_already_present
     r= @sdb.delete_domain(TestDomainName).request
     is_valid_default_response(r)
-    
     r= @sdb.list_domains.request
     assert !r.include?(TestDomainName)
-
+  end
+    
+  def test_002_create_test_domain
     r= @sdb.create_domain(TestDomainName).request
     is_valid_default_response(r)
+  end
     
+  def test_003_list_domains
     r= @sdb.list_domains.request
     assert r.include?(TestDomainName)
-
-    r= @sdb.delete_domain(TestDomainName).request
-    is_valid_default_response(r)
-    
-    r= @sdb.list_domains.request
-    assert !r.include?(TestDomainName)
-  end
-  def test_deletes_a_domain
-    skip
-  end
-  def test_lists_domains
-    r= @sdb.list_domains.request
     assert r.kind_of?(Array)
     assert r.meta.key?(:BoxUsage)
     assert r.meta.key?(:RequestId)
   end
+  
   def test_gets_a_domains_metadata
     skip
   end
@@ -68,5 +60,15 @@ class TestSimpleDB < Test::Unit::TestCase
   end
   def test_uses_a_select_expression_to_retrive_some_items
     skip
+  end
+
+  def test_zzy_delete_test_domain
+    r= @sdb.delete_domain(TestDomainName).request
+    is_valid_default_response(r)
+  end
+    
+  def test_zzz_test_domain_is_gone
+    r= @sdb.list_domains.request
+    assert !r.include?(TestDomainName)
   end
 end
