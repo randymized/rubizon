@@ -1,10 +1,33 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe "The AWS SimpleDB interface" do
+  TestDomainName= 'Rubizon_Domain_For_Use_In_Unit_Testing'
+  def is_valid_default_response(r)
+    r.meta.should have_key(:BoxUsage)
+    r.meta.should have_key(:RequestId)
+  end
   before do
     @sdb= Rubizon::SimpleDBService.new(TestWorker)
   end
-  it "creates a domain"
+  it "creates a domain, makes sure it is listed, deletes the domain and confirms deletion" do
+    r= @sdb.delete_domain(TestDomainName).request
+    is_valid_default_response(r)
+    
+    r= @sdb.list_domains.request
+    r.should_not include(TestDomainName)
+
+    r= @sdb.create_domain(TestDomainName).request
+    is_valid_default_response(r)
+    
+    r= @sdb.list_domains.request
+    r.should include(TestDomainName)
+
+    r= @sdb.delete_domain(TestDomainName).request
+    is_valid_default_response(r)
+    
+    r= @sdb.list_domains.request
+    r.should_not include(TestDomainName)
+  end
   it "deletes a domain"
   it "lists domains" do
     r= @sdb.list_domains.request

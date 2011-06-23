@@ -47,6 +47,17 @@ module Rubizon
       end
     end
     
+    # Create a domain
+    #
+    # domain_name - The name of the domain to create
+    #
+    # Returns an instance of Request
+    def create_domain(domain_name)
+      request= create_request('GET',DefaultResponder,'Action'=>'CreateDomain')
+      request.add_query_elements('DomainName'=>domain_name)
+      request
+    end
+    
     # Delete a domain
     #
     # domain_name - The name of the domain to delete
