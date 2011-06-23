@@ -216,42 +216,42 @@ module Rubizon
     def replace_attribute;true;end
   end                        
     
-    # This is a helper for creating the attributes argument to 
-    # the add_attributes and replace_attributes methods.
-    #
-    # In the simplest case, that argument is simply a hash in which the
-    # keys are the attribute names and the corresponding value is that to be
-    # added to or replace the current attribute value.
-    #
-    # But optional treatment can be specified by extending the hash and its
-    # values with additional methods.
-    #  It is possible to specify some attributes that are to be added or replaced
-    #    even when the default treatment is different.  This allows a single
-    #    message to SDB to specify both attributes that are to be added and ones
-    #    that are to replace existing ones.
-    #  It is also possible to specify an attribute that either must not be set
-    #    or which must have a specific value before the additions and 
-    #    replacements are allowed to procede.  
-    class AttributesToAdd < Hash
-      def initialize(hash)
-        super
-        merge! hash
-      end
-      def add_attribute(name,value)
-        self[name]= value.extend(AddThisAttribute)
-      end
-      def replace_attribute(name,value)
-        self[name]= value.extend(ReplaceThisAttribute)
-      end
-      def must_exist(name,value)
-        def this.expected
-          {name=>value}
-        end
-      end
-      def must_not_exist(name,value)
-        def this.expected
-          {name=>false}
-        end
+  # This is a helper for creating the attributes argument to 
+  # the add_attributes and replace_attributes methods.
+  #
+  # In the simplest case, that argument is simply a hash in which the
+  # keys are the attribute names and the corresponding value is that to be
+  # added to or replace the current attribute value.
+  #
+  # But optional treatment can be specified by extending the hash and its
+  # values with additional methods.
+  #  It is possible to specify some attributes that are to be added or replaced
+  #    even when the default treatment is different.  This allows a single
+  #    message to SDB to specify both attributes that are to be added and ones
+  #    that are to replace existing ones.
+  #  It is also possible to specify an attribute that either must not be set
+  #    or which must have a specific value before the additions and 
+  #    replacements are allowed to procede.  
+  class AttributesToAdd < Hash
+    def initialize(hash)
+      super
+      merge! hash
+    end
+    def add_attribute(name,value)
+      self[name]= value.extend(AddThisAttribute)
+    end
+    def replace_attribute(name,value)
+      self[name]= value.extend(ReplaceThisAttribute)
+    end
+    def must_exist(name,value)
+      def this.expected
+        {name=>value}
       end
     end
+    def must_not_exist(name,value)
+      def this.expected
+        {name=>false}
+      end
+    end
+  end
 end
