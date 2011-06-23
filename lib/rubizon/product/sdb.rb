@@ -18,18 +18,6 @@ module Rubizon
       @workers= workers
     end
     
-    # Create a Request object that can be used to formulate a single request
-    # for this product.
-    #
-    # Returns an instance of Request
-    def create_request(method,responder_class,query_elements=nil)
-      r= super(@workers,method)
-      r.responder_class= responder_class
-      r.add_query_elements('Version'=>'2009-04-15')
-      r.add_query_elements(query_elements) if query_elements
-      r
-    end
-    
     # List domains
     #
     # max_number_of_domains - (optional) If not specified, the AWS defined limit
@@ -194,6 +182,19 @@ module Rubizon
     # for making requests for items within the given domain.
     def domain(name)
       Domain.new(self,name)
+    end
+    
+  protected
+    # Create a Request object that can be used to formulate a single request
+    # for this product.
+    #
+    # Returns an instance of Request
+    def create_request(method,responder_class,query_elements=nil)
+      r= super(@workers,method)
+      r.responder_class= responder_class
+      r.add_query_elements('Version'=>'2009-04-15')
+      r.add_query_elements(query_elements) if query_elements
+      r
     end
   end
   
