@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + '/rubizon/xml_reader'
 require File.dirname(__FILE__) + '/rubizon/request'
 require File.dirname(__FILE__) + '/rubizon/results'
 require File.dirname(__FILE__) + '/rubizon/default_responder'
-require File.dirname(__FILE__) + '/rubizon/errors'
+require File.dirname(__FILE__) + '/rubizon/exceptions'
 require File.dirname(__FILE__) + '/rubizon/status_and_body'
 module Rubizon
   autoload :Version, File.dirname(__FILE__) + '/rubizon/version'
