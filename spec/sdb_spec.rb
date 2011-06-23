@@ -1,7 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe "The AWS SimpleDB interface" do
-  TestDomainName= 'Rubizon_Domain_For_Use_In_Unit_Testing'
   def is_valid_default_response(r)
     r.meta.should have_key(:BoxUsage)
     r.meta.should have_key(:RequestId)
