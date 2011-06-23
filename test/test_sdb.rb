@@ -1,48 +1,60 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'helper'
 
-describe "The AWS SimpleDB interface" do
+class TestSimpleDB < Test::Unit::TestCase
   def is_valid_default_response(r)
-    r.meta.should have_key(:BoxUsage)
-    r.meta.should have_key(:RequestId)
+    assert r.meta.key?(:BoxUsage)
+    assert r.meta.key?(:RequestId)
   end
-  before do
+  def setup
     @sdb= Rubizon::SimpleDBService.new(TestWorker)
   end
-  it "creates a domain, makes sure it is listed, deletes the domain and confirms deletion" do
+  def test_creates_a_domain_makes_sure_it_is_listed_deletes_the_domain_and_confirms_deletion
     r= @sdb.delete_domain(TestDomainName).request
     is_valid_default_response(r)
     
     r= @sdb.list_domains.request
-    r.should_not include(TestDomainName)
+    assert !r.include?(TestDomainName)
 
     r= @sdb.create_domain(TestDomainName).request
     is_valid_default_response(r)
     
     r= @sdb.list_domains.request
-    r.should include(TestDomainName)
+    assert r.include?(TestDomainName)
 
     r= @sdb.delete_domain(TestDomainName).request
     is_valid_default_response(r)
     
     r= @sdb.list_domains.request
-    r.should_not include(TestDomainName)
+    assert !r.include?(TestDomainName)
   end
-  it "deletes a domain"
-  it "lists domains" do
+  def test_deletes_a_domain
+  end
+  def test_lists_domains
     r= @sdb.list_domains.request
-    r.should be_an Array
-    r.meta.should have_key(:BoxUsage)
-    r.meta.should have_key(:RequestId)
+    assert r.kind_of?(Array)
+    assert r.meta.key?(:BoxUsage)
+    assert r.meta.key?(:RequestId)
   end
-  it "gets a domain's metadata"
-  it "creates an item"
-  it "adds attributes to an item"
-  it "replaces attributes of an item"
-  it "both adds and replaces attributes of an item"
-  it "adds attributes to an item and checks that an existing attribute has not changed in the interim"
-  it "tries to add attributes to an item but fails because one of the attributes has changed"
-  it "deletes some attributes of an item"
-  it "deletes all attributes of an item"
-  it "adds attributes to several items in one database request"
-  it "uses a select expression to retrive some items"
+  def test_gets_a_domains_metadata
+  end
+  def test_creates_an_item
+  end
+  def test_adds_attributes_to_an_item
+  end
+  def test_replaces_attributes_of_an_item
+  end
+  def test_both_adds_and_replaces_attributes_of_an_item
+  end
+  def test_adds_attributes_to_an_item_and_checks_that_an_existing_attribute_has_not_changed_in_the_interim
+  end
+  def test_tries_to_add_attributes_to_an_item_but_fails_because_one_of_the_attributes_has_changed
+  end
+  def test_deletes_some_attributes_of_an_item
+  end
+  def test_deletes_all_attributes_of_an_item
+  end
+  def test_adds_attributes_to_several_items_in_one_database_request
+  end
+  def test_uses_a_select_expression_to_retrive_some_items
+  end
 end
