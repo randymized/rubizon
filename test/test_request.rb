@@ -1,7 +1,7 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'helper'
 
-describe "Request" do
-    before do
+class TestRequest < Test::Unit::TestCase
+    def setup
       @region= 'us-east-1'
       @product= 'sns'
       @arn= "arn:aws:#{@product}:#{@region}:123456789:My-Topic" #arn:aws:sns:us-east-1:123456789:My-Topic
@@ -25,62 +25,62 @@ describe "Request" do
       }
       @expectedSignature= 'Nace%2BU3Az4OhN7tISqgs1vdLBHBEijWcBeCqL5xN9xg%3D'
     end
-    it "reports the product's host" do
+    def test_reports_the_products_host
       prod= Rubizon::AbstractSig2Product.new(
         :arn=>@arn
       )
       req= prod.create_request(@workers)
-      @host.should == req.host
+      assert_equal req.host, @host
     end
-    it "reports the product's scheme" do
+    def test_reports_the_products_scheme
       prod= Rubizon::AbstractSig2Product.new(
         :arn=>@arn
       )
       req= prod.create_request(@workers)
-      req.scheme.should == 'https'
+      assert_equal 'https', req.scheme
     end
-    it "reports the product's path" do
+    def test_reports_the_products_path
       prod= Rubizon::AbstractSig2Product.new(
         :arn=>@arn
       )
       req= prod.create_request(@workers)
-      req.path.should == '/'
+      assert_equal '/', req.path
     end
-    it "reports the product's endpoint" do
+    def test_reports_the_products_endpoint
       prod= Rubizon::AbstractSig2Product.new(
         :arn=>@arn
       )
       req= prod.create_request(@workers)
-      req.endpoint.should == 'https://sns.us-east-1.amazonaws.com/'
+      assert_equal 'https://sns.us-east-1.amazonaws.com/',req.endpoint
     end
-    it "Creates a URL that contains the expected host name for the sample request" do
+    def test_creates_a_URL_that_contains_the_expected_host_name_for_the_sample_request
       req= @eCommerceServiceProduct.create_request(@workers)
       req.add_query_elements @eCommerceServiceRequestElements
       uri = URI.parse(req.url);
-      uri.host.should == @eCommerceServiceProduct.host
+      assert_equal @eCommerceServiceProduct.host,uri.host
     end
-    it "Creates a URL that contains the expected path for the sample request" do
+    def test_creates_a_URL_that_contains_the_expected_path_for_the_sample_request
       req= @eCommerceServiceProduct.create_request(@workers)
       req.add_query_elements @eCommerceServiceRequestElements
       uri = URI.parse(req.url);
-      uri.path.should == @eCommerceServiceProduct.path
+      assert_equal @eCommerceServiceProduct.path,uri.path
     end
-    it "Creates a URL that contains the expected scheme for the sample request" do
+    def test_creates_a_URL_that_contains_the_expected_scheme_for_the_sample_request
       req= @eCommerceServiceProduct.create_request(@workers)
       req.add_query_elements @eCommerceServiceRequestElements
       uri = URI.parse(req.url);
-      uri.scheme.should == @eCommerceServiceProduct.scheme
+      assert_equal @eCommerceServiceProduct.scheme,uri.scheme
     end
-    it "Creates a URL that contains the expected query string for the sample request" do
+    def test_creates_a_URL_that_contains_the_expected_query_string_for_the_sample_request
       req= @eCommerceServiceProduct.create_request(@workers)
       req.add_query_elements @eCommerceServiceRequestElements
       uri = URI.parse(req.url);
       query= CGI::parse(uri.query)
       @eCommerceServiceRequestElements.each do |k,v|
-        v.should == query.delete(k).first
+        assert_equal query.delete(k).first, v
       end
-      @workers.credentials.accessID.should == query.delete('AWSAccessKeyId').first
-      @expectedSignature.should == CGI::escape(query.delete('Signature').first)
-      query.should be_empty   #there's nothing left!  All elements are accounted for
+      assert_equal query.delete('AWSAccessKeyId').first, @workers.credentials.accessID
+      assert_equal CGI::escape(query.delete('Signature').first), @expectedSignature
+      assert query.empty?   #there's nothing left!  All elements are accounted for
     end
 end
